@@ -1,6 +1,6 @@
 {
-  "name": "bolt",
-  "description": "An AI Agent",
+  "name": "bolt-youm-aldiqqa",
+  "description": "بولت يوم الدقه - AI Coding Assistant",
   "private": true,
   "license": "MIT",
   "sideEffects": false,

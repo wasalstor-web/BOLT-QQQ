@@ -12,42 +12,36 @@ export default class OpenAIProvider extends BaseProvider {
     apiTokenKey: 'OPENAI_API_KEY',
   };
 
-  staticModels: ModelInfo[] = [
-    /*
-     * Essential fallback models - only the most stable/reliable ones
-     * GPT-4o: 128k context, 4k standard output (64k with long output mode)
-     */
-    { name: 'gpt-4o', label: 'GPT-4o', provider: 'OpenAI', maxTokenAllowed: 128000, maxCompletionTokens: 4096 },
-
-    // GPT-4o Mini: 128k context, cost-effective alternative
-    {
-      name: 'gpt-4o-mini',
-      label: 'GPT-4o Mini',
-      provider: 'OpenAI',
-      maxTokenAllowed: 128000,
-      maxCompletionTokens: 4096,
-    },
-
-    // GPT-3.5-turbo: 16k context, fast and cost-effective
-    {
-      name: 'gpt-3.5-turbo',
-      label: 'GPT-3.5 Turbo',
-      provider: 'OpenAI',
-      maxTokenAllowed: 16000,
-      maxCompletionTokens: 4096,
-    },
-
-    // o1-preview: 128k context, 32k output limit (reasoning model)
-    {
-      name: 'o1-preview',
-      label: 'o1-preview',
-      provider: 'OpenAI',
-      maxTokenAllowed: 128000,
-      maxCompletionTokens: 32000,
-    },
-
-    // o1-mini: 128k context, 65k output limit (reasoning model)
-    { name: 'o1-mini', label: 'o1-mini', provider: 'OpenAI', maxTokenAllowed: 128000, maxCompletionTokens: 65000 },
+    staticModels: ModelInfo[] = [
+    // GPT-5.2 Pro - Latest and most powerful
+    { name: 'gpt-5.2-pro', label: 'GPT-5.2 Pro', provider: 'OpenAI', maxTokenAllowed: 256000, maxCompletionTokens: 32000 },
+    
+    // GPT-5.2 - Latest version
+    { name: 'gpt-5.2', label: 'GPT-5.2', provider: 'OpenAI', maxTokenAllowed: 256000, maxCompletionTokens: 16000 },
+    
+    // GPT-5.2 Codex - Best for coding
+    { name: 'gpt-5.2-codex', label: 'GPT-5.2 Codex', provider: 'OpenAI', maxTokenAllowed: 256000, maxCompletionTokens: 32000 },
+    
+    // GPT-5.1 - Stable version
+    { name: 'gpt-5.1', label: 'GPT-5.1', provider: 'OpenAI', maxTokenAllowed: 200000, maxCompletionTokens: 16000 },
+    
+    // GPT-5 Pro - Professional tier
+    { name: 'gpt-5-pro', label: 'GPT-5 Pro', provider: 'OpenAI', maxTokenAllowed: 200000, maxCompletionTokens: 32000 },
+    
+    // GPT-5 - Standard
+    { name: 'gpt-5', label: 'GPT-5', provider: 'OpenAI', maxTokenAllowed: 200000, maxCompletionTokens: 16000 },
+    
+    // GPT-5 Mini - Fast and efficient
+    { name: 'gpt-5-mini', label: 'GPT-5 Mini', provider: 'OpenAI', maxTokenAllowed: 128000, maxCompletionTokens: 8000 },
+    
+    // o4-mini - Latest reasoning model
+    { name: 'o4-mini', label: 'o4-mini', provider: 'OpenAI', maxTokenAllowed: 200000, maxCompletionTokens: 100000 },
+    
+    // o3 - Advanced reasoning
+    { name: 'o3', label: 'o3', provider: 'OpenAI', maxTokenAllowed: 200000, maxCompletionTokens: 100000 },
+    
+    // o3-mini - Fast reasoning
+    { name: 'o3-mini', label: 'o3-mini', provider: 'OpenAI', maxTokenAllowed: 128000, maxCompletionTokens: 65000 },
   ];
 
   async getDynamicModels(

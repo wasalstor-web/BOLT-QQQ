@@ -3,7 +3,18 @@ import remarkGfm from 'remark-gfm';
 import type { PluggableList, Plugin } from 'unified';
 import rehypeSanitize, { defaultSchema, type Options as RehypeSanitizeOptions } from 'rehype-sanitize';
 import { SKIP, visit } from 'unist-util-visit';
-import type { UnistNode, UnistParent } from 'node_modules/unist-util-visit/lib';
+// Types for unist nodes
+interface UnistNode {
+  type: string;
+  position?: {
+    start: { offset?: number; line: number; column: number };
+    end: { offset?: number; line: number; column: number };
+  };
+}
+
+interface UnistParent extends UnistNode {
+  children: UnistNode[];
+}
 
 export const allowedHTMLElements = [
   'a',
