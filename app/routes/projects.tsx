@@ -7,29 +7,29 @@ import type { Project } from '~/lib/supabase/client';
 import { DashboardLayout } from '~/components/layout/dashboard-layout';
 import { DashboardHeader } from '~/components/layout/sidebar';
 import { ProjectCard, ProjectGrid, EmptyProjects } from '~/components/ui/project-card';
-import {
-  Plus,
-  Search,
-  Filter,
-  Grid3X3,
-  List,
-  Sparkles,
-  SortAsc,
-  SortDesc,
-} from 'lucide-react';
+import { Plus, Search, Filter, Grid3X3, List, Sparkles, SortAsc, SortDesc } from 'lucide-react';
 
 export const meta: MetaFunction = () => {
-  return [
-    { title: 'المشاريع - مبسط إديتر' },
-    { name: 'description', content: 'إدارة جميع مشاريعك' },
-  ];
+  return [{ title: 'المشاريع - مبسط إديتر' }, { name: 'description', content: 'إدارة جميع مشاريعك' }];
 };
 
 const mapStatus = (status: string): 'active' | 'building' | 'archived' | 'draft' => {
-  if (status === 'published') return 'active';
-  if (status === 'draft') return 'draft';
-  if (status === 'archived') return 'archived';
-  if (status === 'building') return 'building';
+  if (status === 'published') {
+    return 'active';
+  }
+
+  if (status === 'draft') {
+    return 'draft';
+  }
+
+  if (status === 'archived') {
+    return 'archived';
+  }
+
+  if (status === 'building') {
+    return 'building';
+  }
+
   return 'draft';
 };
 
@@ -47,17 +47,21 @@ export default function ProjectsPage() {
     const loadData = async () => {
       try {
         const { user: currentUser } = await getUser();
-        // تم تعطيل التحقق مؤقتاً
-        // if (!currentUser) {
-        //   navigate('/login');
-        //   return;
-        // }
+
+        /*
+         * تم تعطيل التحقق مؤقتاً
+         * if (!currentUser) {
+         *   navigate('/login');
+         *   return;
+         * }
+         */
         setUser(currentUser || { email: 'demo@example.com', user_metadata: { name: 'مستخدم تجريبي' } });
 
         const { data } = await getProjects();
         setProjects(data || []);
       } catch (err) {
         console.error('Projects error:', err);
+
         // Mock data
         setProjects([
           {
@@ -68,7 +72,7 @@ export default function ProjectsPage() {
             status: 'published',
             preview_url: 'https://example.com/store',
             created_at: '2025-01-20T10:00:00Z',
-            updated_at: '2025-01-25T15:30:00Z'
+            updated_at: '2025-01-25T15:30:00Z',
           },
           {
             id: '2',
@@ -77,7 +81,7 @@ export default function ProjectsPage() {
             description: 'موقع تعريفي لشركة تقنية ناشئة',
             status: 'draft',
             created_at: '2025-01-18T08:00:00Z',
-            updated_at: '2025-01-24T12:00:00Z'
+            updated_at: '2025-01-24T12:00:00Z',
           },
           {
             id: '3',
@@ -87,7 +91,7 @@ export default function ProjectsPage() {
             status: 'published',
             preview_url: 'https://example.com/blog',
             created_at: '2025-01-15T14:00:00Z',
-            updated_at: '2025-01-23T09:00:00Z'
+            updated_at: '2025-01-23T09:00:00Z',
           },
           {
             id: '4',
@@ -96,7 +100,7 @@ export default function ProjectsPage() {
             description: 'لوحة تحكم لإدارة الموظفين والمهام',
             status: 'draft',
             created_at: '2025-01-10T11:00:00Z',
-            updated_at: '2025-01-22T16:00:00Z'
+            updated_at: '2025-01-22T16:00:00Z',
           },
         ]);
       } finally {
@@ -109,22 +113,25 @@ export default function ProjectsPage() {
 
   // Filter and sort projects
   const filteredProjects = projects
-    .filter(p => {
-      const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           p.description?.toLowerCase().includes(searchQuery.toLowerCase());
+    .filter((p) => {
+      const matchesSearch =
+        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.description?.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesStatus = filterStatus === 'all' || p.status === filterStatus;
+
       return matchesSearch && matchesStatus;
     })
     .sort((a, b) => {
       const dateA = new Date(a.updated_at).getTime();
       const dateB = new Date(b.updated_at).getTime();
+
       return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
     });
 
   const handleDeleteProject = async (id: string) => {
     try {
       await deleteProject(id);
-      setProjects(prev => prev.filter(p => p.id !== id));
+      setProjects((prev) => prev.filter((p) => p.id !== id));
     } catch (err) {
       console.error('Delete error:', err);
     }
@@ -162,10 +169,7 @@ export default function ProjectsPage() {
       }}
     >
       <div className="p-6 lg:p-8" dir="rtl">
-        <DashboardHeader
-          title="المشاريع"
-          subtitle={`${projects.length} مشروع`}
-        />
+        <DashboardHeader title="المشاريع" subtitle={`${projects.length} مشروع`} />
 
         {/* Toolbar */}
         <div className="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between">
@@ -196,7 +200,7 @@ export default function ProjectsPage() {
 
             {/* Sort */}
             <button
-              onClick={() => setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc')}
+              onClick={() => setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'))}
               className="p-2.5 bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
               title={sortOrder === 'desc' ? 'الأحدث أولاً' : 'الأقدم أولاً'}
             >
@@ -235,7 +239,9 @@ export default function ProjectsPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className={viewMode === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' : 'space-y-4'}
+            className={
+              viewMode === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' : 'space-y-4'
+            }
           >
             {filteredProjects.map((project, index) => (
               <motion.div

@@ -1,20 +1,20 @@
 import { motion } from 'framer-motion';
 import { cn, formatRelativeTime, getInitials, generateAvatarColor } from '~/lib/utils';
 import * as Avatar from '@radix-ui/react-avatar';
-import { 
-  FileCode2, 
-  GitBranch, 
-  MessageSquare, 
-  Star, 
+import {
+  FileCode2,
+  GitBranch,
+  MessageSquare,
+  Star,
   Users,
   Zap,
   CheckCircle2,
   XCircle,
   Clock,
-  Rocket
+  Rocket,
 } from 'lucide-react';
 
-export type ActivityType = 
+export type ActivityType =
   | 'project_created'
   | 'project_deployed'
   | 'project_updated'
@@ -81,20 +81,18 @@ function ActivityItem({ activity, index }: { activity: Activity; index: number }
       className="group flex gap-4 py-4 hover:bg-white/[0.02] px-2 -mx-2 rounded-lg transition-colors"
     >
       {/* Activity Icon */}
-      <div className={cn(
-        'flex h-9 w-9 shrink-0 items-center justify-center rounded-full',
-        activityColors[activity.type]
-      )}>
+      <div
+        className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-full', activityColors[activity.type])}
+      >
         {activityIcons[activity.type]}
       </div>
-      
+
       {/* Content */}
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <p className="text-sm text-white">
-              <span className="font-medium">{activity.user.name}</span>
-              {' '}
+              <span className="font-medium">{activity.user.name}</span>{' '}
               <span className="text-gray-400">{activity.title}</span>
               {activity.project && (
                 <>
@@ -105,11 +103,9 @@ function ActivityItem({ activity, index }: { activity: Activity; index: number }
                 </>
               )}
             </p>
-            {activity.description && (
-              <p className="mt-1 text-xs text-gray-500 truncate">{activity.description}</p>
-            )}
+            {activity.description && <p className="mt-1 text-xs text-gray-500 truncate">{activity.description}</p>}
           </div>
-          
+
           {/* Timestamp */}
           <div className="flex items-center gap-1 shrink-0 text-xs text-gray-500">
             <Clock className="h-3 w-3" />
@@ -117,7 +113,7 @@ function ActivityItem({ activity, index }: { activity: Activity; index: number }
           </div>
         </div>
       </div>
-      
+
       {/* User Avatar */}
       <Avatar.Root className="shrink-0">
         <Avatar.Image
@@ -128,7 +124,7 @@ function ActivityItem({ activity, index }: { activity: Activity; index: number }
         <Avatar.Fallback
           className={cn(
             'flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium text-white',
-            generateAvatarColor(activity.user.name)
+            generateAvatarColor(activity.user.name),
           )}
         >
           {getInitials(activity.user.name)}
@@ -147,7 +143,7 @@ export function ActivityFeed({
   maxItems = 5,
 }: ActivityFeedProps) {
   const displayedActivities = activities.slice(0, maxItems);
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -155,22 +151,19 @@ export function ActivityFeed({
       transition={{ duration: 0.5, delay: 0.3 }}
       className={cn(
         'rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.02] p-6 backdrop-blur-xl',
-        className
+        className,
       )}
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-white">{title}</h3>
         {showViewAll && onViewAll && (
-          <button
-            onClick={onViewAll}
-            className="text-sm text-purple-400 hover:text-purple-300 transition-colors"
-          >
+          <button onClick={onViewAll} className="text-sm text-purple-400 hover:text-purple-300 transition-colors">
             عرض الكل
           </button>
         )}
       </div>
-      
+
       {/* Activities List */}
       <div className="divide-y divide-white/5">
         {displayedActivities.length > 0 ? (

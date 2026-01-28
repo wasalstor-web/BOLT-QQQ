@@ -23,10 +23,7 @@ import {
 } from 'lucide-react';
 
 export const meta: MetaFunction = () => {
-  return [
-    { title: 'التحليلات - مبسط إديتر' },
-    { name: 'description', content: 'تحليلات مشاريعك وإحصائياتها' },
-  ];
+  return [{ title: 'التحليلات - مبسط إديتر' }, { name: 'description', content: 'تحليلات مشاريعك وإحصائياتها' }];
 };
 
 // Mock data
@@ -81,11 +78,14 @@ export default function AnalyticsPage() {
     const loadData = async () => {
       try {
         const { user: currentUser } = await getUser();
-        // تم تعطيل التحقق مؤقتاً
-        // if (!currentUser) {
-        //   navigate('/login');
-        //   return;
-        // }
+
+        /*
+         * تم تعطيل التحقق مؤقتاً
+         * if (!currentUser) {
+         *   navigate('/login');
+         *   return;
+         * }
+         */
         setUser(currentUser || { email: 'demo@example.com', user_metadata: { name: 'مستخدم تجريبي' } });
       } catch (err) {
         console.error('Analytics error:', err);
@@ -123,10 +123,7 @@ export default function AnalyticsPage() {
     >
       <div className="p-6 lg:p-8" dir="rtl">
         <div className="flex items-center justify-between mb-8">
-          <DashboardHeader
-            title="التحليلات"
-            subtitle="نظرة عامة على أداء مشاريعك"
-          />
+          <DashboardHeader title="التحليلات" subtitle="نظرة عامة على أداء مشاريعك" />
 
           {/* Date Range Selector */}
           <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl p-1">
@@ -135,9 +132,7 @@ export default function AnalyticsPage() {
                 key={range}
                 onClick={() => setDateRange(range)}
                 className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
-                  dateRange === range
-                    ? 'bg-purple-500/20 text-purple-400'
-                    : 'text-gray-400 hover:text-white'
+                  dateRange === range ? 'bg-purple-500/20 text-purple-400' : 'text-gray-400 hover:text-white'
                 }`}
               >
                 {range === '24h' ? 'اليوم' : range === '7d' ? 'أسبوع' : range === '30d' ? 'شهر' : '3 أشهر'}
@@ -180,11 +175,7 @@ export default function AnalyticsPage() {
 
         {/* Charts Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <AreaChart
-            data={visitsData}
-            title="الزيارات اليومية"
-            color="#8b5cf6"
-          />
+          <AreaChart data={visitsData} title="الزيارات اليومية" color="#8b5cf6" />
           <MultiAreaChart
             data={multiData as any}
             title="نظرة شاملة"
@@ -216,8 +207,14 @@ export default function AnalyticsPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-gray-400">{page.views.toLocaleString('ar-SA')}</span>
-                    <span className={`flex items-center text-xs ${page.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      {page.change >= 0 ? <TrendingUp className="h-3 w-3 mr-1" /> : <TrendingDown className="h-3 w-3 mr-1" />}
+                    <span
+                      className={`flex items-center text-xs ${page.change >= 0 ? 'text-green-400' : 'text-red-400'}`}
+                    >
+                      {page.change >= 0 ? (
+                        <TrendingUp className="h-3 w-3 mr-1" />
+                      ) : (
+                        <TrendingDown className="h-3 w-3 mr-1" />
+                      )}
                       {Math.abs(page.change)}%
                     </span>
                   </div>
@@ -250,8 +247,11 @@ export default function AnalyticsPage() {
                       animate={{ width: `${device.percentage}%` }}
                       transition={{ duration: 1, delay: 0.2 }}
                       className={`h-full rounded-full ${
-                        device.color === 'purple' ? 'bg-purple-500' :
-                        device.color === 'blue' ? 'bg-blue-500' : 'bg-pink-500'
+                        device.color === 'purple'
+                          ? 'bg-purple-500'
+                          : device.color === 'blue'
+                            ? 'bg-blue-500'
+                            : 'bg-pink-500'
                       }`}
                     />
                   </div>

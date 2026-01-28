@@ -79,7 +79,7 @@ export function Sidebar({ user, onLogout, onNewProject, onSearch }: SidebarProps
 
   const NavItemComponent = ({ item, collapsed }: { item: NavItem; collapsed: boolean }) => {
     const isActive = location.pathname === item.href || location.pathname.startsWith(item.href + '/');
-    
+
     const content = (
       <Link
         to={item.href}
@@ -87,7 +87,7 @@ export function Sidebar({ user, onLogout, onNewProject, onSearch }: SidebarProps
           'group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200',
           isActive
             ? 'bg-gradient-to-r from-purple-500/20 to-blue-500/10 text-white'
-            : 'text-gray-400 hover:bg-white/5 hover:text-white'
+            : 'text-gray-400 hover:bg-white/5 hover:text-white',
         )}
       >
         {/* Active Indicator */}
@@ -97,14 +97,16 @@ export function Sidebar({ user, onLogout, onNewProject, onSearch }: SidebarProps
             className="absolute right-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-l-full bg-gradient-to-b from-purple-500 to-blue-500"
           />
         )}
-        
-        <span className={cn(
-          'shrink-0 transition-colors',
-          isActive ? 'text-purple-400' : 'text-gray-400 group-hover:text-white'
-        )}>
+
+        <span
+          className={cn(
+            'shrink-0 transition-colors',
+            isActive ? 'text-purple-400' : 'text-gray-400 group-hover:text-white',
+          )}
+        >
           {item.icon}
         </span>
-        
+
         <AnimatePresence mode="wait">
           {!collapsed && (
             <motion.span
@@ -117,14 +119,14 @@ export function Sidebar({ user, onLogout, onNewProject, onSearch }: SidebarProps
             </motion.span>
           )}
         </AnimatePresence>
-        
+
         {/* Badge */}
         {!collapsed && item.badge && (
           <span className="mr-auto rounded-full bg-purple-500/20 px-2 py-0.5 text-xs text-purple-400">
             {item.badge}
           </span>
         )}
-        
+
         {/* New Badge */}
         {!collapsed && item.isNew && (
           <span className="mr-auto rounded-full bg-gradient-to-r from-purple-500 to-blue-500 px-2 py-0.5 text-xs text-white">
@@ -178,7 +180,7 @@ export function Sidebar({ user, onLogout, onNewProject, onSearch }: SidebarProps
             )}
           </AnimatePresence>
         </Link>
-        
+
         {/* Collapse Button - Desktop */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
@@ -196,7 +198,7 @@ export function Sidebar({ user, onLogout, onNewProject, onSearch }: SidebarProps
             'flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2.5 font-medium text-white',
             'shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40',
             'transition-all duration-300 hover:scale-[1.02]',
-            isCollapsed && 'px-2'
+            isCollapsed && 'px-2',
           )}
         >
           <Plus className="h-5 w-5" />
@@ -223,9 +225,9 @@ export function Sidebar({ user, onLogout, onNewProject, onSearch }: SidebarProps
         {mainNavItems.map((item) => (
           <NavItemComponent key={item.id} item={item} collapsed={isCollapsed} />
         ))}
-        
+
         <div className="my-4 h-px bg-white/5" />
-        
+
         {bottomNavItems.map((item) => (
           <NavItemComponent key={item.id} item={item} collapsed={isCollapsed} />
         ))}
@@ -239,7 +241,7 @@ export function Sidebar({ user, onLogout, onNewProject, onSearch }: SidebarProps
             'flex w-full items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-gray-400',
             'hover:border-purple-500/30 hover:bg-purple-500/10 hover:text-white',
             'transition-all duration-300 group',
-            isCollapsed && 'justify-center px-2'
+            isCollapsed && 'justify-center px-2',
           )}
         >
           <FileCode2 className="h-5 w-5 group-hover:text-purple-400 transition-colors" />
@@ -260,20 +262,16 @@ export function Sidebar({ user, onLogout, onNewProject, onSearch }: SidebarProps
               className={cn(
                 'flex w-full items-center gap-3 rounded-xl px-3 py-2 text-right transition-colors',
                 'hover:bg-white/5',
-                isCollapsed && 'justify-center px-2'
+                isCollapsed && 'justify-center px-2',
               )}
             >
               <Avatar.Root className="shrink-0">
-                <Avatar.Image
-                  src={user?.avatar}
-                  className="h-9 w-9 rounded-full object-cover"
-                  alt={user?.name}
-                />
+                <Avatar.Image src={user?.avatar} className="h-9 w-9 rounded-full object-cover" alt={user?.name} />
                 <Avatar.Fallback className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-blue-500 text-sm font-medium text-white">
                   {user?.name?.charAt(0) || 'م'}
                 </Avatar.Fallback>
               </Avatar.Root>
-              
+
               {!isCollapsed && (
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white truncate">{user?.name || 'المستخدم'}</p>
@@ -321,9 +319,7 @@ export function Sidebar({ user, onLogout, onNewProject, onSearch }: SidebarProps
 
               <DropdownMenu.Separator className="my-1 h-px bg-white/10" />
 
-              <DropdownMenu.Item
-                className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white outline-none"
-              >
+              <DropdownMenu.Item className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white outline-none">
                 <HelpCircle className="h-4 w-4" />
                 المساعدة والدعم
               </DropdownMenu.Item>
@@ -394,7 +390,7 @@ export function Sidebar({ user, onLogout, onNewProject, onSearch }: SidebarProps
         transition={{ duration: 0.2 }}
         className={cn(
           'hidden lg:flex h-screen shrink-0 flex-col border-l border-white/5 bg-gray-900/50 backdrop-blur-xl',
-          'sticky top-0'
+          'sticky top-0',
         )}
       >
         {sidebarContent}
@@ -406,13 +402,11 @@ export function Sidebar({ user, onLogout, onNewProject, onSearch }: SidebarProps
 // Notification Bell Component
 export function NotificationBell() {
   const [hasNotifications] = useState(true);
-  
+
   return (
     <button className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white transition-colors">
       <Bell className="h-5 w-5" />
-      {hasNotifications && (
-        <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500" />
-      )}
+      {hasNotifications && <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500" />}
     </button>
   );
 }

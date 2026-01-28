@@ -19,14 +19,18 @@ export function UserMenu() {
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
+
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   useEffect(() => {
     function handleEscape(event: KeyboardEvent) {
-      if (event.key === 'Escape') setIsOpen(false);
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+      }
     }
     document.addEventListener('keydown', handleEscape);
+
     return () => document.removeEventListener('keydown', handleEscape);
   }, []);
 
@@ -34,7 +38,7 @@ export function UserMenu() {
     try {
       const supabase = createBrowserClient(
         (window as any).ENV?.SUPABASE_URL || '',
-        (window as any).ENV?.SUPABASE_ANON_KEY || ''
+        (window as any).ENV?.SUPABASE_ANON_KEY || '',
       );
       await supabase.auth.signOut();
       clearUser();
@@ -116,9 +120,7 @@ export function UserMenu() {
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-bolt-elements-textPrimary truncate">
-                  {user.full_name || 'مستخدم'}
-                </p>
+                <p className="font-semibold text-bolt-elements-textPrimary truncate">{user.full_name || 'مستخدم'}</p>
                 <p className="text-xs text-bolt-elements-textSecondary truncate">{user.email}</p>
               </div>
             </div>
@@ -166,15 +168,8 @@ export function UserMenu() {
 
           {isDev && (
             <div className="py-2 border-t border-bolt-elements-borderColor">
-              <p className="px-4 py-1 text-[10px] text-purple-400 font-medium uppercase tracking-wider">
-                أدوات المطور
-              </p>
-              <MenuItem
-                href="/dashboard/admin/users"
-                icon="i-ph:users"
-                color="purple"
-                onClick={() => setIsOpen(false)}
-              >
+              <p className="px-4 py-1 text-[10px] text-purple-400 font-medium uppercase tracking-wider">أدوات المطور</p>
+              <MenuItem href="/dashboard/admin/users" icon="i-ph:users" color="purple" onClick={() => setIsOpen(false)}>
                 إدارة المستخدمين
               </MenuItem>
               <MenuItem
@@ -230,7 +225,11 @@ function MenuItem({
       : 'text-bolt-elements-textPrimary hover:bg-bolt-elements-background-depth-3';
 
   return (
-    <a href={href} className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${colorClass}`} onClick={onClick}>
+    <a
+      href={href}
+      className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${colorClass}`}
+      onClick={onClick}
+    >
       <div className={`${icon} text-lg`} />
       {children}
     </a>

@@ -7,15 +7,17 @@ function getSupabaseClient(): SupabaseClient {
   if (typeof window === 'undefined') {
     throw new Error('Supabase client cannot be used on server');
   }
-  
+
   if (!supabaseInstance) {
-    const supabaseUrl = (window as any).ENV?.VITE_SUPABASE_URL || 
-                        import.meta.env?.VITE_SUPABASE_URL || 
-                        'https://ocrtidqksqojdkinqcxk.supabase.co';
-    const supabaseAnonKey = (window as any).ENV?.VITE_SUPABASE_ANON_KEY || 
-                            import.meta.env?.VITE_SUPABASE_ANON_KEY || 
-                            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jcnRpZHFrc3FvamRraW5xY3hrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1MDI1NDQsImV4cCI6MjA4NTA3ODU0NH0.tpThTu1AYx_fie7U3iTF5Vjv5o2XrdgxL8WwBM_60v4';
-    
+    const supabaseUrl =
+      (window as any).ENV?.VITE_SUPABASE_URL ||
+      import.meta.env?.VITE_SUPABASE_URL ||
+      'https://ocrtidqksqojdkinqcxk.supabase.co';
+    const supabaseAnonKey =
+      (window as any).ENV?.VITE_SUPABASE_ANON_KEY ||
+      import.meta.env?.VITE_SUPABASE_ANON_KEY ||
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jcnRpZHFrc3FvamRraW5xY3hrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1MDI1NDQsImV4cCI6MjA4NTA3ODU0NH0.tpThTu1AYx_fie7U3iTF5Vjv5o2XrdgxL8WwBM_60v4';
+
     supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         autoRefreshToken: true,
@@ -24,7 +26,7 @@ function getSupabaseClient(): SupabaseClient {
       },
     });
   }
-  
+
   return supabaseInstance;
 }
 
@@ -60,12 +62,14 @@ export async function signUp(email: string, password: string, name: string) {
     password,
     options: { data: { name } },
   });
+
   return { data, error };
 }
 
 export async function signIn(email: string, password: string) {
   const supabase = getSupabase();
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
   return { data, error };
 }
 
@@ -73,11 +77,13 @@ export async function signInWithGoogle() {
   if (typeof window === 'undefined') {
     return { data: null, error: new Error('Cannot use OAuth on server') };
   }
+
   const supabase = getSupabase();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: { redirectTo: window.location.origin + '/auth/callback' },
   });
+
   return { data, error };
 }
 
@@ -85,61 +91,87 @@ export async function signInWithGithub() {
   if (typeof window === 'undefined') {
     return { data: null, error: new Error('Cannot use OAuth on server') };
   }
+
   const supabase = getSupabase();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'github',
     options: { redirectTo: window.location.origin + '/auth/callback' },
   });
+
   return { data, error };
 }
 
 export async function signOut() {
   const supabase = getSupabase();
   const { error } = await supabase.auth.signOut();
+
   return { error };
 }
 
 export async function getSession() {
   const supabase = getSupabase();
-  const { data: { session }, error } = await supabase.auth.getSession();
+  const {
+    data: { session },
+    error,
+  } = await supabase.auth.getSession();
+
   return { session, error };
 }
 
 export async function getUser() {
   const supabase = getSupabase();
-  const { data: { user }, error } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+
   return { user, error };
 }
 
 export async function getProjects() {
   const supabase = getSupabase();
   const { data, error } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
+
   return { data: data as Project[] | null, error };
 }
 
 export async function getProject(id: string) {
   const supabase = getSupabase();
   const { data, error } = await supabase.from('projects').select('*').eq('id', id).single();
+
   return { data: data as Project | null, error };
 }
 
 export async function createProject(project: Partial<Project>) {
   const supabase = getSupabase();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Not authenticated');
-  const { data, error } = await supabase.from('projects').insert({ ...project, user_id: user.id }).select().single();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error('Not authenticated');
+  }
+
+  const { data, error } = await supabase
+    .from('projects')
+    .insert({ ...project, user_id: user.id })
+    .select()
+    .single();
+
   return { data: data as Project | null, error };
 }
 
 export async function updateProject(id: string, updates: Partial<Project>) {
   const supabase = getSupabase();
   const { data, error } = await supabase.from('projects').update(updates).eq('id', id).select().single();
+
   return { data: data as Project | null, error };
 }
 
 export async function deleteProject(id: string) {
   const supabase = getSupabase();
   const { error } = await supabase.from('projects').delete().eq('id', id);
+
   return { error };
 }
 
@@ -148,9 +180,11 @@ export function onAuthStateChange(callback: (event: string, session: any) => voi
   return supabase.auth.onAuthStateChange(callback);
 }
 
-// ========================================
-// نظام الأدوار والإعدادات
-// ========================================
+/*
+ * ========================================
+ * نظام الأدوار والإعدادات
+ * ========================================
+ */
 
 export type UserRole = 'admin' | 'developer' | 'client';
 
@@ -176,14 +210,15 @@ export interface DeployRequest {
 export async function getUserRole(): Promise<UserRole | null> {
   try {
     const supabase = getSupabase();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return null;
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    const { data } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', user.id)
-      .single();
+    if (!user) {
+      return null;
+    }
+
+    const { data } = await supabase.from('user_roles').select('role').eq('user_id', user.id).single();
 
     return data?.role || 'client';
   } catch {
@@ -200,18 +235,26 @@ export async function isAdmin(): Promise<boolean> {
 // حفظ إعداد للمشرف
 export async function saveAdminSetting(key: string, value: string, isSecret = false) {
   const supabase = getSupabase();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Not authenticated');
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error('Not authenticated');
+  }
 
   const { data, error } = await supabase
     .from('admin_settings')
-    .upsert({
-      admin_id: user.id,
-      setting_key: key,
-      setting_value: value,
-      is_secret: isSecret,
-      updated_at: new Date().toISOString()
-    }, { onConflict: 'admin_id,setting_key' })
+    .upsert(
+      {
+        admin_id: user.id,
+        setting_key: key,
+        setting_value: value,
+        is_secret: isSecret,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'admin_id,setting_key' },
+    )
     .select()
     .single();
 
@@ -222,8 +265,13 @@ export async function saveAdminSetting(key: string, value: string, isSecret = fa
 export async function getAdminSetting(key: string): Promise<string | null> {
   try {
     const supabase = getSupabase();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return null;
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return null;
+    }
 
     const { data } = await supabase
       .from('admin_settings')
@@ -242,8 +290,13 @@ export async function getAdminSetting(key: string): Promise<string | null> {
 export async function getAllAdminSettings(): Promise<AdminSetting[]> {
   try {
     const supabase = getSupabase();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return [];
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return [];
+    }
 
     const { data } = await supabase
       .from('admin_settings')
@@ -260,11 +313,16 @@ export async function getAllAdminSettings(): Promise<AdminSetting[]> {
 export async function createDeployRequest(
   projectName: string,
   projectFiles: Record<string, any>,
-  targetPlatform: 'cloudflare' | 'vercel' | 'netlify'
+  targetPlatform: 'cloudflare' | 'vercel' | 'netlify',
 ) {
   const supabase = getSupabase();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Not authenticated');
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error('Not authenticated');
+  }
 
   const { data, error } = await supabase
     .from('deploy_requests')
@@ -273,7 +331,7 @@ export async function createDeployRequest(
       project_name: projectName,
       project_files: projectFiles,
       target_platform: targetPlatform,
-      status: 'pending'
+      status: 'pending',
     })
     .select()
     .single();
@@ -285,26 +343,27 @@ export async function createDeployRequest(
 export async function getDeployRequests(status?: string) {
   const supabase = getSupabase();
   let query = supabase.from('deploy_requests').select('*').order('created_at', { ascending: false });
-  
+
   if (status) {
     query = query.eq('status', status);
   }
 
   const { data, error } = await query;
+
   return { data: data as DeployRequest[] | null, error };
 }
 
 // تحديث حالة طلب النشر (للمشرف)
 export async function updateDeployRequest(
   requestId: string,
-  updates: { status?: string; deployed_url?: string; admin_notes?: string }
+  updates: { status?: string; deployed_url?: string; admin_notes?: string },
 ) {
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from('deploy_requests')
     .update({
       ...updates,
-      processed_at: new Date().toISOString()
+      processed_at: new Date().toISOString(),
     })
     .eq('id', requestId)
     .select()
@@ -316,21 +375,26 @@ export async function updateDeployRequest(
 // حفظ إعدادات التكامل (GitHub, Vercel, etc.)
 export async function saveIntegrationSettings(integrations: Record<string, any>) {
   const supabase = getSupabase();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   if (!user) {
     // حفظ في localStorage كـ fallback
     if (typeof window !== 'undefined') {
       localStorage.setItem('bolt_integrations', JSON.stringify(integrations));
     }
+
     return { success: true, source: 'localStorage' };
   }
 
   // حفظ كل integration كـ setting منفصل
   const promises = Object.entries(integrations).map(([key, value]) =>
-    saveAdminSetting(`integration_${key}`, JSON.stringify(value), true)
+    saveAdminSetting(`integration_${key}`, JSON.stringify(value), true),
   );
 
   await Promise.all(promises);
+
   return { success: true, source: 'supabase' };
 }
 
@@ -338,14 +402,17 @@ export async function saveIntegrationSettings(integrations: Record<string, any>)
 export async function loadIntegrationSettings(): Promise<Record<string, any>> {
   try {
     const supabase = getSupabase();
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (!user) {
       // استرجاع من localStorage
       if (typeof window !== 'undefined') {
         const saved = localStorage.getItem('bolt_integrations');
         return saved ? JSON.parse(saved) : {};
       }
+
       return {};
     }
 
@@ -353,9 +420,10 @@ export async function loadIntegrationSettings(): Promise<Record<string, any>> {
     const integrations: Record<string, any> = {};
 
     settings
-      .filter(s => s.setting_key.startsWith('integration_'))
-      .forEach(s => {
+      .filter((s) => s.setting_key.startsWith('integration_'))
+      .forEach((s) => {
         const key = s.setting_key.replace('integration_', '');
+
         try {
           integrations[key] = JSON.parse(s.setting_value);
         } catch {

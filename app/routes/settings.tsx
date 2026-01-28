@@ -5,10 +5,7 @@ import type { MetaFunction } from '@remix-run/cloudflare';
 import { getUser, signOut } from '~/lib/supabase/client';
 
 export const meta: MetaFunction = () => {
-  return [
-    { title: 'الإعدادات - مبسط إديتر' },
-    { name: 'description', content: 'إعدادات حسابك' },
-  ];
+  return [{ title: 'الإعدادات - مبسط إديتر' }, { name: 'description', content: 'إعدادات حسابك' }];
 };
 
 interface UserProfile {
@@ -43,12 +40,18 @@ export default function Settings() {
     const loadUser = async () => {
       try {
         const { user } = await getUser();
-        // تم تعطيل التحقق مؤقتاً
-        // if (!user) {
-        //   navigate('/login');
-        //   return;
-        // }
-        const demoUser = user || { email: 'demo@example.com', user_metadata: { full_name: 'مستخدم تجريبي', avatar_url: '' } };
+
+        /*
+         * تم تعطيل التحقق مؤقتاً
+         * if (!user) {
+         *   navigate('/login');
+         *   return;
+         * }
+         */
+        const demoUser = user || {
+          email: 'demo@example.com',
+          user_metadata: { full_name: 'مستخدم تجريبي', avatar_url: '' },
+        };
 
         setProfile({
           name: demoUser.user_metadata?.full_name || demoUser.email?.split('@')[0] || '',
@@ -67,6 +70,7 @@ export default function Settings() {
 
   const handleSave = async () => {
     setSaving(true);
+
     // Simulate save
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setSaving(false);
@@ -121,7 +125,15 @@ export default function Settings() {
           >
             {saving ? (
               <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  fill="none"
+                />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
               </svg>
             ) : (
@@ -163,7 +175,12 @@ export default function Settings() {
                 className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-400 hover:bg-red-500/10 transition-all"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
                 </svg>
                 <span>تسجيل الخروج</span>
               </button>
@@ -174,11 +191,7 @@ export default function Settings() {
           <div className="flex-1">
             {/* Profile Tab */}
             {activeTab === 'profile' && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="space-y-8"
-              >
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
                 <div className="bg-slate-900/50 border border-gray-800/50 rounded-2xl p-8">
                   <h2 className="text-lg font-semibold mb-6">الملف الشخصي</h2>
 
@@ -186,22 +199,26 @@ export default function Settings() {
                   <div className="flex items-center gap-6 mb-8">
                     <div className="relative">
                       {profile.avatar ? (
-                        <img
-                          src={profile.avatar}
-                          alt="Avatar"
-                          className="w-24 h-24 rounded-2xl object-cover"
-                        />
+                        <img src={profile.avatar} alt="Avatar" className="w-24 h-24 rounded-2xl object-cover" />
                       ) : (
                         <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center">
-                          <span className="text-3xl font-bold text-white">
-                            {profile.name.charAt(0).toUpperCase()}
-                          </span>
+                          <span className="text-3xl font-bold text-white">{profile.name.charAt(0).toUpperCase()}</span>
                         </div>
                       )}
                       <button className="absolute -bottom-2 -left-2 p-2 bg-slate-800 border border-gray-700 rounded-xl hover:bg-slate-700 transition-colors">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
                         </svg>
                       </button>
                     </div>
@@ -240,11 +257,7 @@ export default function Settings() {
 
             {/* API Keys Tab */}
             {activeTab === 'api' && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="space-y-8"
-              >
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
                 <div className="bg-slate-900/50 border border-gray-800/50 rounded-2xl p-8">
                   <h2 className="text-lg font-semibold mb-2">مفاتيح API</h2>
                   <p className="text-gray-500 mb-6">أضف مفاتيح API الخاصة بك للاستفادة من خدمات الذكاء الاصطناعي</p>
@@ -316,11 +329,7 @@ export default function Settings() {
 
             {/* Preferences Tab */}
             {activeTab === 'preferences' && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="space-y-8"
-              >
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
                 <div className="bg-slate-900/50 border border-gray-800/50 rounded-2xl p-8">
                   <h2 className="text-lg font-semibold mb-6">التفضيلات</h2>
 
@@ -424,11 +433,7 @@ export default function Settings() {
 
             {/* Billing Tab */}
             {activeTab === 'billing' && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="space-y-8"
-              >
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
                 <div className="bg-slate-900/50 border border-gray-800/50 rounded-2xl p-8">
                   <h2 className="text-lg font-semibold mb-6">الفوترة والاشتراك</h2>
 
@@ -436,7 +441,9 @@ export default function Settings() {
                   <div className="p-6 bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-xl mb-8">
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <span className="px-3 py-1 bg-purple-500/30 text-purple-300 text-sm rounded-full">الخطة الحالية</span>
+                        <span className="px-3 py-1 bg-purple-500/30 text-purple-300 text-sm rounded-full">
+                          الخطة الحالية
+                        </span>
                         <h3 className="text-2xl font-bold mt-2">مجاني</h3>
                         <p className="text-gray-500">3 مشاريع • AI محدود</p>
                       </div>
@@ -450,7 +457,9 @@ export default function Settings() {
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="p-6 bg-slate-800/30 border border-gray-700/50 rounded-xl">
                       <h4 className="font-semibold text-lg mb-2">Pro</h4>
-                      <p className="text-3xl font-bold mb-2">$19<span className="text-sm text-gray-500 font-normal">/شهر</span></p>
+                      <p className="text-3xl font-bold mb-2">
+                        $19<span className="text-sm text-gray-500 font-normal">/شهر</span>
+                      </p>
                       <ul className="space-y-2 mb-6 text-sm text-gray-400">
                         <li className="flex items-center gap-2">
                           <span className="text-green-400">✓</span> مشاريع غير محدودة
@@ -469,7 +478,9 @@ export default function Settings() {
 
                     <div className="p-6 bg-slate-800/30 border border-gray-700/50 rounded-xl">
                       <h4 className="font-semibold text-lg mb-2">Enterprise</h4>
-                      <p className="text-3xl font-bold mb-2">$49<span className="text-sm text-gray-500 font-normal">/شهر</span></p>
+                      <p className="text-3xl font-bold mb-2">
+                        $49<span className="text-sm text-gray-500 font-normal">/شهر</span>
+                      </p>
                       <ul className="space-y-2 mb-6 text-sm text-gray-400">
                         <li className="flex items-center gap-2">
                           <span className="text-green-400">✓</span> كل مميزات Pro

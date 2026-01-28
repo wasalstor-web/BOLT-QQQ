@@ -4,14 +4,14 @@ import { useState, useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import type { MetaFunction } from '@remix-run/cloudflare';
 import { cn } from '~/lib/utils';
-import { 
-  Sparkles, 
-  Zap, 
-  Code2, 
-  Globe, 
-  Palette, 
-  Rocket, 
-  Shield, 
+import {
+  Sparkles,
+  Zap,
+  Code2,
+  Globe,
+  Palette,
+  Rocket,
+  Shield,
   Star,
   Play,
   Check,
@@ -20,7 +20,7 @@ import {
   X,
   Github,
   Twitter,
-  Linkedin
+  Linkedin,
 } from 'lucide-react';
 
 export const meta: MetaFunction = () => {
@@ -34,16 +34,26 @@ export const meta: MetaFunction = () => {
 function useCounter(end: number, duration: number = 2000, trigger: boolean = true) {
   const [count, setCount] = useState(0);
   useEffect(() => {
-    if (!trigger) return;
+    if (!trigger) {
+      return;
+    }
+
     let startTime: number;
     const animate = (currentTime: number) => {
-      if (!startTime) startTime = currentTime;
+      if (!startTime) {
+        startTime = currentTime;
+      }
+
       const progress = Math.min((currentTime - startTime) / duration, 1);
       setCount(Math.floor(progress * end));
-      if (progress < 1) requestAnimationFrame(animate);
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
     };
     requestAnimationFrame(animate);
   }, [end, duration, trigger]);
+
   return count;
 }
 
@@ -54,8 +64,10 @@ function useMousePosition() {
       setPosition({ x: e.clientX, y: e.clientY });
     };
     window.addEventListener('mousemove', handleMove);
+
     return () => window.removeEventListener('mousemove', handleMove);
   }, []);
+
   return position;
 }
 
@@ -65,9 +77,9 @@ function useMousePosition() {
 function FloatingOrbs() {
   const mousePosition = useMousePosition();
   const [mounted, setMounted] = useState(false);
-  
+
   useEffect(() => setMounted(true), []);
-  
+
   const orbs = [
     { size: 400, color: 'from-purple-500/30 to-purple-900/10', x: '10%', y: '20%', parallax: 0.02 },
     { size: 300, color: 'from-blue-500/20 to-cyan-900/10', x: '80%', y: '30%', parallax: 0.03 },
@@ -76,7 +88,9 @@ function FloatingOrbs() {
     { size: 250, color: 'from-cyan-500/15 to-blue-900/10', x: '70%', y: '60%', parallax: 0.015 },
   ];
 
-  if (!mounted) return null;
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none">
@@ -111,7 +125,7 @@ function FloatingOrbs() {
 function GridBackground() {
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none">
-      <div 
+      <div
         className="absolute inset-0 opacity-[0.03]"
         style={{
           backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
@@ -121,15 +135,23 @@ function GridBackground() {
       />
       <svg className="absolute inset-0 w-full h-full">
         <motion.line
-          x1="0%" y1="30%" x2="100%" y2="30%"
-          stroke="url(#lineGradient)" strokeWidth="1"
+          x1="0%"
+          y1="30%"
+          x2="100%"
+          y2="30%"
+          stroke="url(#lineGradient)"
+          strokeWidth="1"
           initial={{ pathLength: 0, opacity: 0 }}
           animate={{ pathLength: 1, opacity: [0, 0.5, 0] }}
           transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
         />
         <motion.line
-          x1="60%" y1="0%" x2="60%" y2="100%"
-          stroke="url(#lineGradient)" strokeWidth="1"
+          x1="60%"
+          y1="0%"
+          x2="60%"
+          y2="100%"
+          stroke="url(#lineGradient)"
+          strokeWidth="1"
           initial={{ pathLength: 0, opacity: 0 }}
           animate={{ pathLength: 1, opacity: [0, 0.3, 0] }}
           transition={{ duration: 5, repeat: Infinity, ease: 'linear', delay: 1 }}
@@ -150,22 +172,25 @@ function GridBackground() {
 function Card3D({ children, className }: { children: ReactNode; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
-  
+
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  
+
   const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [15, -15]), { stiffness: 300, damping: 30 });
   const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-15, 15]), { stiffness: 300, damping: 30 });
-  
+
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!ref.current) return;
+    if (!ref.current) {
+      return;
+    }
+
     const rect = ref.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
     x.set((e.clientX - centerX) / rect.width);
     y.set((e.clientY - centerY) / rect.height);
   };
-  
+
   const handleMouseLeave = () => {
     x.set(0);
     y.set(0);
@@ -186,16 +211,17 @@ function Card3D({ children, className }: { children: ReactNode; className?: stri
         animate={{ opacity: isHovered ? 0.4 : 0 }}
         transition={{ duration: 0.3 }}
       />
-      
+
       <div className="relative rounded-2xl border border-white/10 bg-gray-900/80 backdrop-blur-xl overflow-hidden">
         <motion.div
           className="absolute inset-0 opacity-0"
           style={{
-            background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.1) 45%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.1) 55%, transparent 60%)',
+            background:
+              'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.1) 45%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.1) 55%, transparent 60%)',
           }}
-          animate={{ 
+          animate={{
             x: isHovered ? ['0%', '200%'] : '0%',
-            opacity: isHovered ? 1 : 0
+            opacity: isHovered ? 1 : 0,
           }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
         />
@@ -210,21 +236,28 @@ function AnimatedCounter({ value, suffix = '' }: { value: number; suffix?: strin
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const count = useCounter(value, 2000, isVisible);
-  
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) setIsVisible(true);
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
       },
-      { threshold: 0.5 }
+      { threshold: 0.5 },
     );
-    if (ref.current) observer.observe(ref.current);
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
     return () => observer.disconnect();
   }, []);
 
   return (
     <div ref={ref} className="text-4xl md:text-5xl font-bold">
-      {count.toLocaleString()}{suffix}
+      {count.toLocaleString()}
+      {suffix}
     </div>
   );
 }
@@ -234,26 +267,29 @@ function TypingAnimation({ texts }: { texts: string[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [displayText, setDisplayText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
-  
+
   useEffect(() => {
     const currentText = texts[currentIndex];
-    const timeout = setTimeout(() => {
-      if (!isDeleting) {
-        if (displayText.length < currentText.length) {
-          setDisplayText(currentText.slice(0, displayText.length + 1));
+    const timeout = setTimeout(
+      () => {
+        if (!isDeleting) {
+          if (displayText.length < currentText.length) {
+            setDisplayText(currentText.slice(0, displayText.length + 1));
+          } else {
+            setTimeout(() => setIsDeleting(true), 2000);
+          }
         } else {
-          setTimeout(() => setIsDeleting(true), 2000);
+          if (displayText.length > 0) {
+            setDisplayText(displayText.slice(0, -1));
+          } else {
+            setIsDeleting(false);
+            setCurrentIndex((prev) => (prev + 1) % texts.length);
+          }
         }
-      } else {
-        if (displayText.length > 0) {
-          setDisplayText(displayText.slice(0, -1));
-        } else {
-          setIsDeleting(false);
-          setCurrentIndex((prev) => (prev + 1) % texts.length);
-        }
-      }
-    }, isDeleting ? 50 : 100);
-    
+      },
+      isDeleting ? 50 : 100,
+    );
+
     return () => clearTimeout(timeout);
   }, [displayText, isDeleting, currentIndex, texts]);
 
@@ -270,7 +306,17 @@ function TypingAnimation({ texts }: { texts: string[] }) {
 }
 
 // Feature Card Component
-function FeatureCard({ icon, title, description, delay = 0 }: { icon: ReactNode; title: string; description: string; delay?: number }) {
+function FeatureCard({
+  icon,
+  title,
+  description,
+  delay = 0,
+}: {
+  icon: ReactNode;
+  title: string;
+  description: string;
+  delay?: number;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -292,18 +338,18 @@ function FeatureCard({ icon, title, description, delay = 0 }: { icon: ReactNode;
 }
 
 // Pricing Card Component
-function PricingCard({ 
-  name, 
-  price, 
-  period, 
-  features, 
+function PricingCard({
+  name,
+  price,
+  period,
+  features,
   isPopular = false,
-  ctaText = 'ابدأ الآن'
-}: { 
-  name: string; 
-  price: string; 
+  ctaText = 'ابدأ الآن',
+}: {
+  name: string;
+  price: string;
   period: string;
-  features: string[]; 
+  features: string[];
   isPopular?: boolean;
   ctaText?: string;
 }) {
@@ -323,7 +369,7 @@ function PricingCard({
               </span>
             </div>
           )}
-          
+
           <div className="text-center mb-6">
             <h3 className="text-xl font-bold text-white mb-2">{name}</h3>
             <div className="flex items-baseline justify-center gap-1">
@@ -333,7 +379,7 @@ function PricingCard({
               <span className="text-gray-500">{period}</span>
             </div>
           </div>
-          
+
           <ul className="space-y-3 mb-8">
             {features.map((feature, i) => (
               <li key={i} className="flex items-center gap-3 text-gray-300">
@@ -342,14 +388,14 @@ function PricingCard({
               </li>
             ))}
           </ul>
-          
+
           <Link
             to="/editor"
             className={cn(
               'block w-full py-3 rounded-xl font-medium text-center transition-all',
               isPopular
                 ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-[1.02]'
-                : 'bg-white/5 text-white border border-white/10 hover:bg-white/10 hover:border-white/20'
+                : 'bg-white/5 text-white border border-white/10 hover:bg-white/10 hover:border-white/20',
             )}
           >
             {ctaText}
@@ -361,7 +407,19 @@ function PricingCard({
 }
 
 // Testimonial Card
-function TestimonialCard({ quote, author, role, avatar, delay = 0 }: { quote: string; author: string; role: string; avatar: string; delay?: number }) {
+function TestimonialCard({
+  quote,
+  author,
+  role,
+  avatar,
+  delay = 0,
+}: {
+  quote: string;
+  author: string;
+  role: string;
+  avatar: string;
+  delay?: number;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -396,25 +454,60 @@ function TestimonialCard({ quote, author, role, avatar, delay = 0 }: { quote: st
 export default function LandingPage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  
+
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
+
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const features = [
-    { icon: <Sparkles className="h-6 w-6" />, title: 'ذكاء اصطناعي متقدم', description: 'نماذج AI متطورة تفهم متطلباتك بالعربية وتحولها لكود احترافي' },
-    { icon: <Zap className="h-6 w-6" />, title: 'سرعة فائقة', description: 'أنشئ موقعك في دقائق معدودة بدلاً من أسابيع من البرمجة' },
-    { icon: <Code2 className="h-6 w-6" />, title: 'كود نظيف', description: 'كود احترافي قابل للتعديل والتصدير بأي وقت' },
-    { icon: <Globe className="h-6 w-6" />, title: 'نشر فوري', description: 'انشر موقعك مباشرة على الإنترنت بضغطة زر واحدة' },
-    { icon: <Palette className="h-6 w-6" />, title: 'تصاميم عصرية', description: 'تصاميم متجاوبة وعصرية تناسب جميع الأجهزة' },
-    { icon: <Shield className="h-6 w-6" />, title: 'أمان متكامل', description: 'حماية متقدمة لموقعك وبياناتك مع شهادة SSL مجانية' },
+    {
+      icon: <Sparkles className="h-6 w-6" />,
+      title: 'ذكاء اصطناعي متقدم',
+      description: 'نماذج AI متطورة تفهم متطلباتك بالعربية وتحولها لكود احترافي',
+    },
+    {
+      icon: <Zap className="h-6 w-6" />,
+      title: 'سرعة فائقة',
+      description: 'أنشئ موقعك في دقائق معدودة بدلاً من أسابيع من البرمجة',
+    },
+    {
+      icon: <Code2 className="h-6 w-6" />,
+      title: 'كود نظيف',
+      description: 'كود احترافي قابل للتعديل والتصدير بأي وقت',
+    },
+    {
+      icon: <Globe className="h-6 w-6" />,
+      title: 'نشر فوري',
+      description: 'انشر موقعك مباشرة على الإنترنت بضغطة زر واحدة',
+    },
+    {
+      icon: <Palette className="h-6 w-6" />,
+      title: 'تصاميم عصرية',
+      description: 'تصاميم متجاوبة وعصرية تناسب جميع الأجهزة',
+    },
+    {
+      icon: <Shield className="h-6 w-6" />,
+      title: 'أمان متكامل',
+      description: 'حماية متقدمة لموقعك وبياناتك مع شهادة SSL مجانية',
+    },
   ];
 
   const testimonials = [
-    { quote: 'أفضل أداة لبناء المواقع استخدمتها. وفرت علي أسابيع من العمل!', author: 'محمد أحمد', role: 'رائد أعمال', avatar: 'م' },
-    { quote: 'الذكاء الاصطناعي فهم بالضبط ما أريده وأنشأ موقعاً مذهلاً', author: 'سارة العلي', role: 'مصممة', avatar: 'س' },
+    {
+      quote: 'أفضل أداة لبناء المواقع استخدمتها. وفرت علي أسابيع من العمل!',
+      author: 'محمد أحمد',
+      role: 'رائد أعمال',
+      avatar: 'م',
+    },
+    {
+      quote: 'الذكاء الاصطناعي فهم بالضبط ما أريده وأنشأ موقعاً مذهلاً',
+      author: 'سارة العلي',
+      role: 'مصممة',
+      avatar: 'س',
+    },
     { quote: 'حولت فكرتي لموقع متكامل في 10 دقائق. لا يصدق!', author: 'خالد المطيري', role: 'مطور', avatar: 'خ' },
   ];
 
@@ -429,13 +522,13 @@ export default function LandingPage() {
         animate={{ y: 0 }}
         className={cn(
           'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-          isScrolled && 'bg-gray-950/80 backdrop-blur-xl border-b border-white/5'
+          isScrolled && 'bg-gray-950/80 backdrop-blur-xl border-b border-white/5',
         )}
       >
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-3 group">
-              <motion.div 
+              <motion.div
                 whileHover={{ scale: 1.05, rotate: 5 }}
                 className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30"
               >
@@ -447,16 +540,22 @@ export default function LandingPage() {
             </Link>
 
             <div className="hidden md:flex items-center gap-8">
-              <a href="#features" className="text-gray-400 hover:text-white transition-colors">المميزات</a>
-              <a href="#pricing" className="text-gray-400 hover:text-white transition-colors">الأسعار</a>
-              <a href="#testimonials" className="text-gray-400 hover:text-white transition-colors">آراء العملاء</a>
+              <a href="#features" className="text-gray-400 hover:text-white transition-colors">
+                المميزات
+              </a>
+              <a href="#pricing" className="text-gray-400 hover:text-white transition-colors">
+                الأسعار
+              </a>
+              <a href="#testimonials" className="text-gray-400 hover:text-white transition-colors">
+                آراء العملاء
+              </a>
             </div>
 
             <div className="hidden md:flex items-center gap-4">
               <Link to="/editor" className="px-5 py-2.5 text-gray-300 hover:text-white transition-colors font-medium">
                 تسجيل الدخول
               </Link>
-              <Link 
+              <Link
                 to="/editor"
                 className="group px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 rounded-xl font-medium shadow-lg shadow-purple-500/30 transition-all hover:shadow-purple-500/50 hover:scale-105 flex items-center gap-2"
               >
@@ -483,12 +582,25 @@ export default function LandingPage() {
               className="md:hidden border-t border-white/10 bg-gray-950/95 backdrop-blur-xl"
             >
               <div className="px-6 py-4 space-y-4">
-                <a href="#features" className="block text-gray-300 hover:text-white">المميزات</a>
-                <a href="#pricing" className="block text-gray-300 hover:text-white">الأسعار</a>
-                <a href="#testimonials" className="block text-gray-300 hover:text-white">آراء العملاء</a>
+                <a href="#features" className="block text-gray-300 hover:text-white">
+                  المميزات
+                </a>
+                <a href="#pricing" className="block text-gray-300 hover:text-white">
+                  الأسعار
+                </a>
+                <a href="#testimonials" className="block text-gray-300 hover:text-white">
+                  آراء العملاء
+                </a>
                 <div className="pt-4 border-t border-white/10 space-y-3">
-                  <Link to="/editor" className="block text-center py-2.5 text-gray-300">جرب الآن</Link>
-                  <Link to="/editor" className="block text-center py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl font-medium">ابدأ مجاناً</Link>
+                  <Link to="/editor" className="block text-center py-2.5 text-gray-300">
+                    جرب الآن
+                  </Link>
+                  <Link
+                    to="/editor"
+                    className="block text-center py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl font-medium"
+                  >
+                    ابدأ مجاناً
+                  </Link>
                 </div>
               </div>
             </motion.div>
@@ -544,7 +656,7 @@ export default function LandingPage() {
             transition={{ delay: 0.5 }}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
           >
-            <Link 
+            <Link
               to="/editor"
               className="group px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 rounded-2xl font-bold text-lg shadow-2xl shadow-purple-500/30 transition-all hover:shadow-purple-500/50 hover:scale-105 flex items-center gap-3"
             >
@@ -552,7 +664,7 @@ export default function LandingPage() {
               ابدأ الإنشاء مجاناً
               <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
             </Link>
-            <a 
+            <a
               href="#demo"
               className="group px-8 py-4 border border-white/20 hover:border-purple-500/50 rounded-2xl font-medium text-gray-300 hover:text-white transition-all hover:bg-white/5 flex items-center gap-3"
             >
@@ -584,7 +696,7 @@ export default function LandingPage() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="p-6 aspect-video bg-gradient-to-br from-gray-900 to-gray-800">
                   <div className="h-full rounded-xl bg-gray-950/50 border border-white/5 flex">
                     <div className="w-16 border-l border-white/5 p-3 space-y-3">
@@ -594,14 +706,11 @@ export default function LandingPage() {
                           initial={{ opacity: 0, x: 10 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: 1 + i * 0.1 }}
-                          className={cn(
-                            'w-10 h-10 rounded-lg',
-                            i === 0 ? 'bg-purple-500/30' : 'bg-white/5'
-                          )}
+                          className={cn('w-10 h-10 rounded-lg', i === 0 ? 'bg-purple-500/30' : 'bg-white/5')}
                         />
                       ))}
                     </div>
-                    
+
                     <div className="flex-1 p-6">
                       <motion.div
                         initial={{ opacity: 0 }}
@@ -618,7 +727,7 @@ export default function LandingPage() {
                             <div className="h-2 w-16 bg-white/10 rounded mt-1" />
                           </div>
                         </div>
-                        
+
                         <div className="bg-gray-800/50 rounded-xl p-4 border border-white/5">
                           <motion.p
                             initial={{ opacity: 0 }}
@@ -630,7 +739,7 @@ export default function LandingPage() {
                           </motion.p>
                         </div>
                       </motion.div>
-                      
+
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -716,7 +825,10 @@ export default function LandingPage() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="relative z-10 px-6 py-24 bg-gradient-to-b from-transparent via-purple-950/20 to-transparent">
+      <section
+        id="pricing"
+        className="relative z-10 px-6 py-24 bg-gradient-to-b from-transparent via-purple-950/20 to-transparent"
+      >
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -746,14 +858,28 @@ export default function LandingPage() {
               name="احترافي"
               price="$19"
               period="/شهرياً"
-              features={['مشاريع غير محدودة', '50GB مساحة تخزين', 'نطاق مخصص', 'دعم أولوية', 'تحليلات متقدمة', 'إزالة العلامة المائية']}
+              features={[
+                'مشاريع غير محدودة',
+                '50GB مساحة تخزين',
+                'نطاق مخصص',
+                'دعم أولوية',
+                'تحليلات متقدمة',
+                'إزالة العلامة المائية',
+              ]}
               isPopular
             />
             <PricingCard
               name="المؤسسات"
               price="$49"
               period="/شهرياً"
-              features={['كل مميزات الاحترافي', 'مساحة غير محدودة', 'API كامل', 'SLA مضمون', 'مدير حساب مخصص', 'تدريب الفريق']}
+              features={[
+                'كل مميزات الاحترافي',
+                'مساحة غير محدودة',
+                'API كامل',
+                'SLA مضمون',
+                'مدير حساب مخصص',
+                'تدريب الفريق',
+              ]}
               ctaText="تواصل معنا"
             />
           </div>
@@ -796,14 +922,8 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto">
           <Card3D>
             <div className="p-12 text-center">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-              >
-                <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
-                  مستعد لإنشاء موقعك؟
-                </h2>
+              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+                <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">مستعد لإنشاء موقعك؟</h2>
                 <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
                   انضم لآلاف المستخدمين الذين يبنون مواقعهم بالذكاء الاصطناعي
                 </p>
@@ -830,7 +950,7 @@ export default function LandingPage() {
               </div>
               <span className="text-xl font-bold text-white">مبسط إديتر</span>
             </div>
-            
+
             <div className="flex items-center gap-6">
               <a href="#" className="text-gray-400 hover:text-white transition-colors">
                 <Twitter className="h-5 w-5" />
@@ -842,17 +962,11 @@ export default function LandingPage() {
                 <Linkedin className="h-5 w-5" />
               </a>
             </div>
-            
-            <p className="text-gray-500 text-sm">
-              © 2025 مبسط إديتر. جميع الحقوق محفوظة
-            </p>
+
+            <p className="text-gray-500 text-sm">© 2025 مبسط إديتر. جميع الحقوق محفوظة</p>
           </div>
         </div>
       </footer>
     </div>
   );
 }
-
-
-
-

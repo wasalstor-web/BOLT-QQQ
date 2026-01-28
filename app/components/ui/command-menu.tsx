@@ -39,90 +39,183 @@ interface CommandMenuProps {
 export function CommandMenu({ isOpen, onClose, onNavigate, onAction }: CommandMenuProps) {
   const [search, setSearch] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
-  
+
   const commands: CommandItem[] = [
     // Navigation
-    { id: 'home', title: 'الرئيسية', icon: <Home className="h-4 w-4" />, action: () => onNavigate?.('/dashboard'), category: 'navigation' },
-    { id: 'projects', title: 'المشاريع', icon: <Folder className="h-4 w-4" />, action: () => onNavigate?.('/projects'), category: 'navigation' },
-    { id: 'analytics', title: 'التحليلات', icon: <BarChart3 className="h-4 w-4" />, action: () => onNavigate?.('/analytics'), category: 'navigation' },
-    { id: 'team', title: 'الفريق', icon: <Users className="h-4 w-4" />, action: () => onNavigate?.('/team'), category: 'navigation' },
-    { id: 'settings', title: 'الإعدادات', icon: <Settings className="h-4 w-4" />, shortcut: ['⌘', ','], action: () => onNavigate?.('/settings'), category: 'navigation' },
-    
+    {
+      id: 'home',
+      title: 'الرئيسية',
+      icon: <Home className="h-4 w-4" />,
+      action: () => onNavigate?.('/dashboard'),
+      category: 'navigation',
+    },
+    {
+      id: 'projects',
+      title: 'المشاريع',
+      icon: <Folder className="h-4 w-4" />,
+      action: () => onNavigate?.('/projects'),
+      category: 'navigation',
+    },
+    {
+      id: 'analytics',
+      title: 'التحليلات',
+      icon: <BarChart3 className="h-4 w-4" />,
+      action: () => onNavigate?.('/analytics'),
+      category: 'navigation',
+    },
+    {
+      id: 'team',
+      title: 'الفريق',
+      icon: <Users className="h-4 w-4" />,
+      action: () => onNavigate?.('/team'),
+      category: 'navigation',
+    },
+    {
+      id: 'settings',
+      title: 'الإعدادات',
+      icon: <Settings className="h-4 w-4" />,
+      shortcut: ['⌘', ','],
+      action: () => onNavigate?.('/settings'),
+      category: 'navigation',
+    },
+
     // Actions
-    { id: 'new-project', title: 'مشروع جديد', description: 'إنشاء مشروع بالذكاء الاصطناعي', icon: <Plus className="h-4 w-4" />, shortcut: ['⌘', 'N'], action: () => onAction?.('new-project'), category: 'actions' },
-    { id: 'open-editor', title: 'فتح المحرر', description: 'الانتقال للمحرر', icon: <FileCode2 className="h-4 w-4" />, action: () => onNavigate?.('/'), category: 'actions' },
-    { id: 'ai-generate', title: 'توليد بالذكاء الاصطناعي', icon: <Zap className="h-4 w-4" />, shortcut: ['⌘', 'G'], action: () => onAction?.('ai-generate'), category: 'actions' },
-    
+    {
+      id: 'new-project',
+      title: 'مشروع جديد',
+      description: 'إنشاء مشروع بالذكاء الاصطناعي',
+      icon: <Plus className="h-4 w-4" />,
+      shortcut: ['⌘', 'N'],
+      action: () => onAction?.('new-project'),
+      category: 'actions',
+    },
+    {
+      id: 'open-editor',
+      title: 'فتح المحرر',
+      description: 'الانتقال للمحرر',
+      icon: <FileCode2 className="h-4 w-4" />,
+      action: () => onNavigate?.('/'),
+      category: 'actions',
+    },
+    {
+      id: 'ai-generate',
+      title: 'توليد بالذكاء الاصطناعي',
+      icon: <Zap className="h-4 w-4" />,
+      shortcut: ['⌘', 'G'],
+      action: () => onAction?.('ai-generate'),
+      category: 'actions',
+    },
+
     // Settings
-    { id: 'theme-toggle', title: 'تبديل السمة', description: 'داكن / فاتح', icon: <Moon className="h-4 w-4" />, action: () => onAction?.('toggle-theme'), category: 'settings' },
-    { id: 'shortcuts', title: 'اختصارات لوحة المفاتيح', icon: <Keyboard className="h-4 w-4" />, shortcut: ['⌘', '/'], action: () => onAction?.('show-shortcuts'), category: 'settings' },
-    
+    {
+      id: 'theme-toggle',
+      title: 'تبديل السمة',
+      description: 'داكن / فاتح',
+      icon: <Moon className="h-4 w-4" />,
+      action: () => onAction?.('toggle-theme'),
+      category: 'settings',
+    },
+    {
+      id: 'shortcuts',
+      title: 'اختصارات لوحة المفاتيح',
+      icon: <Keyboard className="h-4 w-4" />,
+      shortcut: ['⌘', '/'],
+      action: () => onAction?.('show-shortcuts'),
+      category: 'settings',
+    },
+
     // Help
-    { id: 'docs', title: 'التوثيق', icon: <ExternalLink className="h-4 w-4" />, action: () => window.open('/docs', '_blank'), category: 'help' },
-    { id: 'help', title: 'المساعدة والدعم', icon: <HelpCircle className="h-4 w-4" />, action: () => onAction?.('show-help'), category: 'help' },
-    { id: 'logout', title: 'تسجيل الخروج', icon: <LogOut className="h-4 w-4" />, action: () => onAction?.('logout'), category: 'help' },
+    {
+      id: 'docs',
+      title: 'التوثيق',
+      icon: <ExternalLink className="h-4 w-4" />,
+      action: () => window.open('/docs', '_blank'),
+      category: 'help',
+    },
+    {
+      id: 'help',
+      title: 'المساعدة والدعم',
+      icon: <HelpCircle className="h-4 w-4" />,
+      action: () => onAction?.('show-help'),
+      category: 'help',
+    },
+    {
+      id: 'logout',
+      title: 'تسجيل الخروج',
+      icon: <LogOut className="h-4 w-4" />,
+      action: () => onAction?.('logout'),
+      category: 'help',
+    },
   ];
-  
-  const filteredCommands = commands.filter((cmd) =>
-    cmd.title.toLowerCase().includes(search.toLowerCase()) ||
-    cmd.description?.toLowerCase().includes(search.toLowerCase())
+
+  const filteredCommands = commands.filter(
+    (cmd) =>
+      cmd.title.toLowerCase().includes(search.toLowerCase()) ||
+      cmd.description?.toLowerCase().includes(search.toLowerCase()),
   );
-  
+
   const groupedCommands = {
     navigation: filteredCommands.filter((c) => c.category === 'navigation'),
     actions: filteredCommands.filter((c) => c.category === 'actions'),
     settings: filteredCommands.filter((c) => c.category === 'settings'),
     help: filteredCommands.filter((c) => c.category === 'help'),
   };
-  
+
   const categoryTitles = {
     navigation: 'التنقل',
     actions: 'الإجراءات',
     settings: 'الإعدادات',
     help: 'المساعدة',
   };
-  
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (!isOpen) return;
-    
-    switch (e.key) {
-      case 'ArrowDown':
-        e.preventDefault();
-        setSelectedIndex((prev) => Math.min(prev + 1, filteredCommands.length - 1));
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        setSelectedIndex((prev) => Math.max(prev - 1, 0));
-        break;
-      case 'Enter':
-        e.preventDefault();
-        if (filteredCommands[selectedIndex]) {
-          filteredCommands[selectedIndex].action();
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (!isOpen) {
+        return;
+      }
+
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          setSelectedIndex((prev) => Math.min(prev + 1, filteredCommands.length - 1));
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          setSelectedIndex((prev) => Math.max(prev - 1, 0));
+          break;
+        case 'Enter':
+          e.preventDefault();
+
+          if (filteredCommands[selectedIndex]) {
+            filteredCommands[selectedIndex].action();
+            onClose();
+          }
+
+          break;
+        case 'Escape':
           onClose();
-        }
-        break;
-      case 'Escape':
-        onClose();
-        break;
-    }
-  }, [isOpen, filteredCommands, selectedIndex, onClose]);
-  
+          break;
+      }
+    },
+    [isOpen, filteredCommands, selectedIndex, onClose],
+  );
+
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
-  
+
   useEffect(() => {
     setSelectedIndex(0);
   }, [search]);
-  
+
   useEffect(() => {
     if (isOpen) {
       setSearch('');
       setSelectedIndex(0);
     }
   }, [isOpen]);
-  
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -135,7 +228,7 @@ export function CommandMenu({ isOpen, onClose, onNavigate, onAction }: CommandMe
             onClick={onClose}
             className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
           />
-          
+
           {/* Modal */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: -20 }}
@@ -160,17 +253,17 @@ export function CommandMenu({ isOpen, onClose, onNavigate, onAction }: CommandMe
                   ESC
                 </kbd>
               </div>
-              
+
               {/* Commands List */}
               <div className="max-h-[400px] overflow-y-auto p-2">
                 {filteredCommands.length === 0 ? (
-                  <div className="py-8 text-center text-gray-500">
-                    لا توجد نتائج لـ "{search}"
-                  </div>
+                  <div className="py-8 text-center text-gray-500">لا توجد نتائج لـ "{search}"</div>
                 ) : (
                   Object.entries(groupedCommands).map(([category, items]) => {
-                    if (items.length === 0) return null;
-                    
+                    if (items.length === 0) {
+                      return null;
+                    }
+
                     return (
                       <div key={category} className="mb-2">
                         <div className="px-3 py-2 text-xs font-medium text-gray-500">
@@ -179,7 +272,7 @@ export function CommandMenu({ isOpen, onClose, onNavigate, onAction }: CommandMe
                         {items.map((cmd) => {
                           const globalIndex = filteredCommands.findIndex((c) => c.id === cmd.id);
                           const isSelected = globalIndex === selectedIndex;
-                          
+
                           return (
                             <button
                               key={cmd.id}
@@ -190,13 +283,15 @@ export function CommandMenu({ isOpen, onClose, onNavigate, onAction }: CommandMe
                               onMouseEnter={() => setSelectedIndex(globalIndex)}
                               className={cn(
                                 'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-right transition-colors',
-                                isSelected ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/5'
+                                isSelected ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/5',
                               )}
                             >
-                              <div className={cn(
-                                'flex h-8 w-8 items-center justify-center rounded-lg',
-                                isSelected ? 'bg-purple-500/20 text-purple-400' : 'bg-white/5 text-gray-400'
-                              )}>
+                              <div
+                                className={cn(
+                                  'flex h-8 w-8 items-center justify-center rounded-lg',
+                                  isSelected ? 'bg-purple-500/20 text-purple-400' : 'bg-white/5 text-gray-400',
+                                )}
+                              >
                                 {cmd.icon}
                               </div>
                               <div className="flex-1 min-w-0">
@@ -225,7 +320,7 @@ export function CommandMenu({ isOpen, onClose, onNavigate, onAction }: CommandMe
                   })
                 )}
               </div>
-              
+
               {/* Footer */}
               <div className="border-t border-white/10 px-4 py-3">
                 <div className="flex items-center justify-between text-xs text-gray-500">
@@ -254,7 +349,7 @@ export function CommandMenu({ isOpen, onClose, onNavigate, onAction }: CommandMe
 // Hook to use Command Menu with keyboard shortcut
 export function useCommandMenu() {
   const [isOpen, setIsOpen] = useState(false);
-  
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -262,11 +357,12 @@ export function useCommandMenu() {
         setIsOpen((prev) => !prev);
       }
     };
-    
+
     window.addEventListener('keydown', handleKeyDown);
+
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
-  
+
   return {
     isOpen,
     open: () => setIsOpen(true),

@@ -37,8 +37,10 @@ interface AreaChartProps {
 }
 
 function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: TooltipPayload[]; label?: string }) {
-  if (!active || !payload?.length) return null;
-  
+  if (!active || !payload?.length) {
+    return null;
+  }
+
   return (
     <div className="rounded-lg border border-white/10 bg-gray-900/95 p-3 shadow-xl backdrop-blur-xl">
       <p className="mb-1 text-xs text-gray-400">{label}</p>
@@ -71,7 +73,7 @@ export function AreaChart({
       transition={{ duration: 0.5, delay: 0.2 }}
       className={cn(
         'rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.02] p-6 backdrop-blur-xl',
-        className
+        className,
       )}
     >
       {(title || subtitle) && (
@@ -80,7 +82,7 @@ export function AreaChart({
           {subtitle && <p className="mt-1 text-sm text-gray-400">{subtitle}</p>}
         </div>
       )}
-      
+
       <div style={{ height }}>
         <ResponsiveContainer width="100%" height="100%">
           <RechartsAreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
@@ -90,15 +92,9 @@ export function AreaChart({
                 <stop offset="95%" stopColor={color} stopOpacity={0} />
               </linearGradient>
             </defs>
-            
-            {showGrid && (
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="rgba(255,255,255,0.05)"
-                vertical={false}
-              />
-            )}
-            
+
+            {showGrid && <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />}
+
             {showXAxis && (
               <XAxis
                 dataKey="name"
@@ -108,7 +104,7 @@ export function AreaChart({
                 dy={10}
               />
             )}
-            
+
             {showYAxis && (
               <YAxis
                 axisLine={false}
@@ -118,9 +114,9 @@ export function AreaChart({
                 dx={-10}
               />
             )}
-            
+
             <Tooltip content={<CustomTooltip />} />
-            
+
             <Area
               type="monotone"
               dataKey={dataKey}
@@ -162,7 +158,7 @@ export function MultiAreaChart({
       transition={{ duration: 0.5, delay: 0.2 }}
       className={cn(
         'rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.02] p-6 backdrop-blur-xl',
-        className
+        className,
       )}
     >
       {(title || subtitle) && (
@@ -171,22 +167,19 @@ export function MultiAreaChart({
             {title && <h3 className="text-lg font-semibold text-white">{title}</h3>}
             {subtitle && <p className="mt-1 text-sm text-gray-400">{subtitle}</p>}
           </div>
-          
+
           {/* Legend */}
           <div className="flex items-center gap-4">
             {series.map((s) => (
               <div key={s.dataKey} className="flex items-center gap-2">
-                <div
-                  className="h-2 w-2 rounded-full"
-                  style={{ backgroundColor: s.color }}
-                />
+                <div className="h-2 w-2 rounded-full" style={{ backgroundColor: s.color }} />
                 <span className="text-xs text-gray-400">{s.name || s.dataKey}</span>
               </div>
             ))}
           </div>
         </div>
       )}
-      
+
       <div style={{ height }}>
         <ResponsiveContainer width="100%" height="100%">
           <RechartsAreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
@@ -198,15 +191,9 @@ export function MultiAreaChart({
                 </linearGradient>
               ))}
             </defs>
-            
-            {showGrid && (
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="rgba(255,255,255,0.05)"
-                vertical={false}
-              />
-            )}
-            
+
+            {showGrid && <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />}
+
             {showXAxis && (
               <XAxis
                 dataKey="name"
@@ -216,7 +203,7 @@ export function MultiAreaChart({
                 dy={10}
               />
             )}
-            
+
             {showYAxis && (
               <YAxis
                 axisLine={false}
@@ -226,9 +213,9 @@ export function MultiAreaChart({
                 dx={-10}
               />
             )}
-            
+
             <Tooltip content={<CustomTooltip />} />
-            
+
             {series.map((s) => (
               <Area
                 key={s.dataKey}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from '@remix-run/react';
-import { getSupabase } from '~/lib/supabase/client';
+import { getSupabase, getUserRole } from '~/lib/supabase/client';
+import { getDashboardRoute } from '~/lib/auth';
 import { motion } from 'framer-motion';
 
 export default function AuthCallback() {
@@ -12,36 +13,41 @@ export default function AuthCallback() {
     const handleAuthCallback = async () => {
       try {
         const supabase = getSupabase();
-        
-        // Supabase OAuth returns tokens in URL hash
+
         const hashParams = new URLSearchParams(window.location.hash.substring(1));
         const accessToken = hashParams.get('access_token');
         const refreshToken = hashParams.get('refresh_token');
-        
+
         if (accessToken && refreshToken) {
           setMessage('جاري التحقق من الحساب...');
-          
+
           const { error } = await supabase.auth.setSession({
             access_token: accessToken,
             refresh_token: refreshToken,
           });
-          
+
           if (error) {
             console.error('Session error:', error);
             setStatus('error');
             setMessage('فشل في تسجيل الدخول');
             setTimeout(() => navigate('/login?error=session_failed'), 2000);
+
             return;
           }
         }
-        
-        // Verify session exists
-        const { data: { session } } = await supabase.auth.getSession();
-        
+
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
         if (session) {
           setStatus('success');
           setMessage('تم تسجيل الدخول بنجاح!');
-          setTimeout(() => navigate('/dashboard'), 1500);
+
+          const role = await getUserRole();
+          const dashboardRoute = getDashboardRoute(role);
+
+          setTimeout(() => navigate(dashboardRoute), 1500);
         } else {
           setStatus('error');
           setMessage('لم يتم العثور على جلسة');
@@ -59,35 +65,39 @@ export default function AuthCallback() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 flex items-center justify-center" dir="rtl">
-      {/* Background Effects */}
+    <div
+      className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 flex items-center justify-center"
+      dir="rtl"
+    >
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
       </div>
-      
-      <motion.div 
+
+      <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         className="relative z-10 text-center p-8 bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-gray-800 shadow-2xl"
       >
-        {/* Logo */}
         <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-purple-500/30">
           <span className="text-3xl font-bold text-white">م</span>
         </div>
-        
-        {/* Status Icon */}
+
         <div className="mb-6">
           {status === 'loading' && (
             <div className="w-16 h-16 mx-auto">
               <svg className="animate-spin text-purple-500" viewBox="0 0 24 24" fill="none">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
               </svg>
             </div>
           )}
           {status === 'success' && (
-            <motion.div 
+            <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto"
@@ -98,7 +108,7 @@ export default function AuthCallback() {
             </motion.div>
           )}
           {status === 'error' && (
-            <motion.div 
+            <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto"
@@ -109,25 +119,22 @@ export default function AuthCallback() {
             </motion.div>
           )}
         </div>
-        
-        {/* Message */}
-        <motion.p 
+
+        <motion.p
           key={message}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`text-lg font-medium ${
-            status === 'success' ? 'text-green-400' : 
-            status === 'error' ? 'text-red-400' : 
-            'text-gray-300'
-          }`}
+          className={
+            'text-lg font-medium ' +
+            (status === 'success' ? 'text-green-400' : status === 'error' ? 'text-red-400' : 'text-gray-300')
+          }
         >
           {message}
         </motion.p>
-        
-        {/* Progress Bar */}
+
         {status === 'loading' && (
           <div className="mt-6 w-48 h-1 bg-gray-800 rounded-full overflow-hidden mx-auto">
-            <motion.div 
+            <motion.div
               className="h-full bg-gradient-to-r from-purple-500 to-pink-500"
               initial={{ width: '0%' }}
               animate={{ width: '100%' }}

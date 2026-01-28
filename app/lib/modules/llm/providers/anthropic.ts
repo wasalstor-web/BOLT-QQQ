@@ -66,7 +66,7 @@ export default class AnthropicProvider extends BaseProvider {
     const data = res.data?.filter((model: any) => model.type === 'model' && !staticModelIds.includes(model.id)) || [];
 
     return data.map((m: any) => {
-      let contextWindow = m.max_tokens || 200000;
+      const contextWindow = m.max_tokens || 200000;
       let maxCompletionTokens = 128000;
 
       if (m.id?.includes('claude-opus-4') || m.id?.includes('claude-4')) {

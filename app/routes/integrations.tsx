@@ -24,10 +24,7 @@ import {
 } from 'lucide-react';
 
 export const meta: MetaFunction = () => {
-  return [
-    { title: 'التكاملات - مبسط إديتر' },
-    { name: 'description', content: 'إدارة تكاملات التطبيقات' },
-  ];
+  return [{ title: 'التكاملات - مبسط إديتر' }, { name: 'description', content: 'إدارة تكاملات التطبيقات' }];
 };
 
 interface Integration {
@@ -166,22 +163,26 @@ export default function IntegrationsPage() {
       try {
         // Load saved integration states from localStorage
         const savedIntegrations = storage.getIntegrations();
+
         if (savedIntegrations && typeof savedIntegrations === 'object') {
           // Convert to simple boolean record
           const booleanStates: Record<string, boolean> = {};
-          Object.keys(savedIntegrations).forEach(key => {
+          Object.keys(savedIntegrations).forEach((key) => {
             const val = (savedIntegrations as any)[key];
             booleanStates[key] = typeof val === 'boolean' ? val : !!val?.isConnected;
           });
           setConnectionStates(booleanStates);
         }
-        
+
         const { user: currentUser } = await getUser();
-        // تم تعطيل التحقق مؤقتاً
-        // if (!currentUser) {
-        //   navigate('/editor');
-        //   return;
-        // }
+
+        /*
+         * تم تعطيل التحقق مؤقتاً
+         * if (!currentUser) {
+         *   navigate('/editor');
+         *   return;
+         * }
+         */
         setUser(currentUser || { email: 'demo@example.com', user_metadata: { name: 'مستخدم تجريبي' } });
       } catch (err) {
         console.error('Integrations error:', err);
@@ -194,25 +195,27 @@ export default function IntegrationsPage() {
   }, [navigate]);
 
   const toggleConnection = (integrationId: string) => {
-    setConnectionStates(prev => {
+    setConnectionStates((prev) => {
       const newState = { ...prev, [integrationId]: !prev[integrationId] };
       storage.setIntegrations(newState as any);
+
       return newState;
     });
   };
 
   const getIntegrationsList = () => {
-    return integrations.map(i => ({
+    return integrations.map((i) => ({
       ...i,
       isConnected: connectionStates[i.id] ?? i.isConnected,
     }));
   };
 
-  const filteredIntegrations = activeCategory === 'all'
-    ? getIntegrationsList()
-    : getIntegrationsList().filter(i => i.category === activeCategory);
+  const filteredIntegrations =
+    activeCategory === 'all'
+      ? getIntegrationsList()
+      : getIntegrationsList().filter((i) => i.category === activeCategory);
 
-  const connectedCount = getIntegrationsList().filter(i => i.isConnected).length;
+  const connectedCount = getIntegrationsList().filter((i) => i.isConnected).length;
 
   if (loading) {
     return (
@@ -239,10 +242,7 @@ export default function IntegrationsPage() {
       }}
     >
       <div className="p-6 lg:p-8" dir="rtl">
-        <DashboardHeader
-          title="التكاملات"
-          subtitle={`${connectedCount} تكامل متصل`}
-        />
+        <DashboardHeader title="التكاملات" subtitle={`${connectedCount} تكامل متصل`} />
 
         {/* Connected Summary */}
         <div className="mb-8 p-4 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-2xl">
@@ -287,7 +287,9 @@ export default function IntegrationsPage() {
               className="group bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 hover:border-purple-500/30 transition-all"
             >
               <div className="flex items-start justify-between mb-4">
-                <div className={`p-3 rounded-xl ${integration.isConnected ? 'bg-green-500/20 text-green-400' : 'bg-white/10 text-gray-400'}`}>
+                <div
+                  className={`p-3 rounded-xl ${integration.isConnected ? 'bg-green-500/20 text-green-400' : 'bg-white/10 text-gray-400'}`}
+                >
                   {integration.icon}
                 </div>
                 <div className="flex items-center gap-2">

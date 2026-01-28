@@ -1,8 +1,10 @@
 import { atom, computed } from 'nanostores';
 
-// ═══════════════════════════════════════════════════════════════════
-// Types
-// ═══════════════════════════════════════════════════════════════════
+/*
+ * ═══════════════════════════════════════════════════════════════════
+ * Types
+ * ═══════════════════════════════════════════════════════════════════
+ */
 
 export interface PreviewInfo {
   port: number;
@@ -14,28 +16,37 @@ export interface PreviewInfo {
 
 export type PreviewStatus = 'idle' | 'starting' | 'running' | 'error';
 
-// ═══════════════════════════════════════════════════════════════════
-// Stores
-// ═══════════════════════════════════════════════════════════════════
+/*
+ * ═══════════════════════════════════════════════════════════════════
+ * Stores
+ * ═══════════════════════════════════════════════════════════════════
+ */
 
 export const previewsStore = atom<PreviewInfo[]>([]);
 export const activePreviewIndex = atom<number>(0);
 export const previewStatus = atom<PreviewStatus>('idle');
 export const previewError = atom<string | null>(null);
 
-// ═══════════════════════════════════════════════════════════════════
-// Computed
-// ═══════════════════════════════════════════════════════════════════
+/*
+ * ═══════════════════════════════════════════════════════════════════
+ * Computed
+ * ═══════════════════════════════════════════════════════════════════
+ */
 
-export const activePreview = computed([previewsStore, activePreviewIndex], (previews, index) => previews[index] || null);
+export const activePreview = computed(
+  [previewsStore, activePreviewIndex],
+  (previews, index) => previews[index] || null,
+);
 
 export const hasPreview = computed(previewsStore, (previews) => previews.length > 0 && previews.some((p) => p.ready));
 
 export const previewCount = computed(previewsStore, (previews) => previews.length);
 
-// ═══════════════════════════════════════════════════════════════════
-// Actions
-// ═══════════════════════════════════════════════════════════════════
+/*
+ * ═══════════════════════════════════════════════════════════════════
+ * Actions
+ * ═══════════════════════════════════════════════════════════════════
+ */
 
 export function addPreview(port: number, url: string, title?: string, type?: PreviewInfo['type']) {
   const current = previewsStore.get();
@@ -60,6 +71,7 @@ export function removePreview(port: number) {
   previewsStore.set(newPreviews);
 
   const currentIndex = activePreviewIndex.get();
+
   if (currentIndex >= newPreviews.length) {
     activePreviewIndex.set(Math.max(0, newPreviews.length - 1));
   }
@@ -71,6 +83,7 @@ export function removePreview(port: number) {
 
 export function setActivePreview(index: number) {
   const previews = previewsStore.get();
+
   if (index >= 0 && index < previews.length) {
     activePreviewIndex.set(index);
   }
@@ -89,6 +102,7 @@ export function setPreviewStatus(status: PreviewStatus) {
 
 export function setPreviewError(error: string | null) {
   previewError.set(error);
+
   if (error) {
     previewStatus.set('error');
   }
@@ -96,6 +110,7 @@ export function setPreviewError(error: string | null) {
 
 export function refreshPreview() {
   const current = activePreview.get();
+
   if (current) {
     const url = new URL(current.url);
     url.searchParams.set('_t', Date.now().toString());

@@ -25,12 +25,10 @@ export function StatsCard({
   className,
   delay = 0,
 }: StatsCardProps) {
-  const formattedValue = typeof value === 'number' && format !== 'none'
-    ? formatNumber(value)
-    : value;
-  
+  const formattedValue = typeof value === 'number' && format !== 'none' ? formatNumber(value) : value;
+
   const trendDirection = trend || (change ? (change > 0 ? 'up' : change < 0 ? 'down' : 'neutral') : 'neutral');
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -40,12 +38,12 @@ export function StatsCard({
         'relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.02] p-6 backdrop-blur-xl',
         'hover:border-white/20 hover:from-white/10 hover:to-white/5',
         'transition-all duration-300 group',
-        className
+        className,
       )}
     >
       {/* Background Glow */}
       <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br from-purple-500/20 to-transparent blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      
+
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <span className="text-sm font-medium text-gray-400">{title}</span>
@@ -55,7 +53,7 @@ export function StatsCard({
           </div>
         )}
       </div>
-      
+
       {/* Value */}
       <div className="flex items-baseline gap-2 mb-2">
         <motion.span
@@ -67,16 +65,18 @@ export function StatsCard({
           {formattedValue}
         </motion.span>
       </div>
-      
+
       {/* Change Indicator */}
       {change !== undefined && (
         <div className="flex items-center gap-2">
-          <div className={cn(
-            'flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium',
-            trendDirection === 'up' && 'bg-green-500/10 text-green-400',
-            trendDirection === 'down' && 'bg-red-500/10 text-red-400',
-            trendDirection === 'neutral' && 'bg-gray-500/10 text-gray-400'
-          )}>
+          <div
+            className={cn(
+              'flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium',
+              trendDirection === 'up' && 'bg-green-500/10 text-green-400',
+              trendDirection === 'down' && 'bg-red-500/10 text-red-400',
+              trendDirection === 'neutral' && 'bg-gray-500/10 text-gray-400',
+            )}
+          >
             {trendDirection === 'up' && <ArrowUpIcon className="h-3 w-3" />}
             {trendDirection === 'down' && <ArrowDownIcon className="h-3 w-3" />}
             <span>{formatPercentage(Math.abs(change), { showSign: false })}</span>
@@ -100,10 +100,6 @@ export function StatsGrid({ children, columns = 4, className }: StatsGridProps) 
     3: 'md:grid-cols-3',
     4: 'md:grid-cols-2 lg:grid-cols-4',
   };
-  
-  return (
-    <div className={cn('grid gap-4', gridCols[columns], className)}>
-      {children}
-    </div>
-  );
+
+  return <div className={cn('grid gap-4', gridCols[columns], className)}>{children}</div>;
 }

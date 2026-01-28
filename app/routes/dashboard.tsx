@@ -11,23 +11,12 @@ import { StatsCard, StatsGrid } from '~/components/ui/stats-card';
 import { AreaChart } from '~/components/ui/area-chart';
 import { ActivityFeed } from '~/components/ui/activity-feed';
 import { ProjectCard, ProjectGrid, EmptyProjects } from '~/components/ui/project-card';
-import { 
-  Folder, 
-  Eye, 
-  TrendingUp, 
-  Zap,
-  Plus,
-  ArrowLeft,
-  Sparkles
-} from 'lucide-react';
+import { Folder, Eye, TrendingUp, Zap, Plus, ArrowLeft, Sparkles } from 'lucide-react';
 
 type ActivityType = 'project_created' | 'ai_generation' | 'project_deployed' | 'project_updated' | 'comment_added';
 
 export const meta: MetaFunction = () => {
-  return [
-    { title: 'لوحة التحكم - مبسط إديتر' },
-    { name: 'description', content: 'إدارة مشاريعك ومواقعك' },
-  ];
+  return [{ title: 'لوحة التحكم - مبسط إديتر' }, { name: 'description', content: 'إدارة مشاريعك ومواقعك' }];
 };
 
 // Mock chart data
@@ -79,45 +68,49 @@ export default function DashboardPage() {
     const loadData = async () => {
       try {
         const { user: currentUser } = await getUser();
-        // تم تعطيل التحقق مؤقتاً للاختبار - يمكن إعادة تفعيله لاحقاً
-        // if (!currentUser) {
-        //   navigate('/login');
-        //   return;
-        // }
+
+        /*
+         * تم تعطيل التحقق مؤقتاً للاختبار - يمكن إعادة تفعيله لاحقاً
+         * if (!currentUser) {
+         *   navigate('/login');
+         *   return;
+         * }
+         */
         setUser(currentUser || { email: 'demo@example.com', user_metadata: { name: 'مستخدم تجريبي' } });
 
         const { data } = await getProjects();
         setProjects(data || []);
       } catch (err) {
         console.error('Dashboard error:', err);
+
         // Use mock data for now
         setProjects([
-          { 
-            id: '1', 
-            user_id: '', 
-            name: 'متجر إلكتروني', 
-            description: 'متجر لبيع المنتجات الإلكترونية', 
-            status: 'published', 
-            created_at: '2025-01-20', 
-            updated_at: '2025-01-20' 
+          {
+            id: '1',
+            user_id: '',
+            name: 'متجر إلكتروني',
+            description: 'متجر لبيع المنتجات الإلكترونية',
+            status: 'published',
+            created_at: '2025-01-20',
+            updated_at: '2025-01-20',
           },
-          { 
-            id: '2', 
-            user_id: '', 
-            name: 'موقع شركة', 
-            description: 'موقع تعريفي لشركة تقنية', 
-            status: 'draft', 
-            created_at: '2025-01-18', 
-            updated_at: '2025-01-18' 
+          {
+            id: '2',
+            user_id: '',
+            name: 'موقع شركة',
+            description: 'موقع تعريفي لشركة تقنية',
+            status: 'draft',
+            created_at: '2025-01-18',
+            updated_at: '2025-01-18',
           },
-          { 
-            id: '3', 
-            user_id: '', 
-            name: 'مدونة شخصية', 
-            description: 'مدونة للتدوين والمقالات', 
-            status: 'published', 
-            created_at: '2025-01-15', 
-            updated_at: '2025-01-17' 
+          {
+            id: '3',
+            user_id: '',
+            name: 'مدونة شخصية',
+            description: 'مدونة للتدوين والمقالات',
+            status: 'published',
+            created_at: '2025-01-15',
+            updated_at: '2025-01-17',
           },
         ]);
       } finally {
@@ -172,7 +165,7 @@ export default function DashboardPage() {
   }));
 
   return (
-    <DashboardLayout 
+    <DashboardLayout
       user={{
         name: user?.user_metadata?.name || 'المستخدم',
         email: user?.email || 'user@example.com',
@@ -198,7 +191,7 @@ export default function DashboardPage() {
             إليك نظرة عامة على مشاريعك ونشاطك
           </motion.p>
         </div>
-        
+
         <motion.button
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -214,12 +207,7 @@ export default function DashboardPage() {
 
       {/* Stats Grid */}
       <StatsGrid className="mb-8">
-        <StatsCard
-          title="إجمالي المشاريع"
-          value={stats.total}
-          icon={<Folder className="h-5 w-5" />}
-          delay={0}
-        />
+        <StatsCard title="إجمالي المشاريع" value={stats.total} icon={<Folder className="h-5 w-5" />} delay={0} />
         <StatsCard
           title="المشاريع المنشورة"
           value={stats.published}
@@ -255,11 +243,7 @@ export default function DashboardPage() {
           />
         </div>
         <div>
-          <ActivityFeed
-            activities={mockActivities}
-            title="النشاط الأخير"
-            maxItems={4}
-          />
+          <ActivityFeed activities={mockActivities} title="النشاط الأخير" maxItems={4} />
         </div>
       </div>
 
@@ -274,7 +258,7 @@ export default function DashboardPage() {
             عرض الكل
           </button>
         </div>
-        
+
         {transformedProjects.length > 0 ? (
           <ProjectGrid>
             {transformedProjects.slice(0, 4).map((project, index) => (
@@ -302,12 +286,8 @@ export default function DashboardPage() {
       >
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="text-center md:text-right">
-            <h3 className="text-lg font-semibold text-white mb-1">
-              هل تريد إنشاء موقع جديد؟
-            </h3>
-            <p className="text-gray-400">
-              استخدم الذكاء الاصطناعي لإنشاء موقعك في دقائق معدودة
-            </p>
+            <h3 className="text-lg font-semibold text-white mb-1">هل تريد إنشاء موقع جديد؟</h3>
+            <p className="text-gray-400">استخدم الذكاء الاصطناعي لإنشاء موقعك في دقائق معدودة</p>
           </div>
           <button
             onClick={() => navigate('/editor')}
@@ -321,4 +301,3 @@ export default function DashboardPage() {
     </DashboardLayout>
   );
 }
-

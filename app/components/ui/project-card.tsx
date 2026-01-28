@@ -1,17 +1,6 @@
 import { motion } from 'framer-motion';
 import { cn, formatRelativeTime, formatNumber } from '~/lib/utils';
-import { 
-  MoreHorizontal, 
-  ExternalLink, 
-  Copy, 
-  Trash2, 
-  Edit3,
-  Eye,
-  GitBranch,
-  Clock,
-  Globe,
-  Zap
-} from 'lucide-react';
+import { MoreHorizontal, ExternalLink, Copy, Trash2, Edit3, Eye, GitBranch, Clock, Globe, Zap } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 
 interface Project {
@@ -69,7 +58,7 @@ export function ProjectCard({
   delay = 0,
 }: ProjectCardProps) {
   const status = statusConfig[project.status];
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -81,7 +70,7 @@ export function ProjectCard({
         'bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-xl',
         'hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10',
         'transition-all duration-300 cursor-pointer',
-        className
+        className,
       )}
       onClick={() => onOpen?.(project)}
     >
@@ -95,12 +84,10 @@ export function ProjectCard({
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-purple-900/20 to-blue-900/20">
-            <div className="text-4xl opacity-50">
-              {frameworkIcons[project.framework || ''] || '📁'}
-            </div>
+            <div className="text-4xl opacity-50">{frameworkIcons[project.framework || ''] || '📁'}</div>
           </div>
         )}
-        
+
         {/* Overlay on Hover */}
         <div className="absolute inset-0 flex items-center justify-center gap-3 bg-black/60 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
           <button
@@ -124,20 +111,19 @@ export function ProjectCard({
             </button>
           )}
         </div>
-        
+
         {/* Status Badge */}
         <div className="absolute top-3 left-3">
-          <span className={cn(
-            'inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium',
-            status.color
-          )}>
+          <span
+            className={cn('inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium', status.color)}
+          >
             {project.status === 'building' && (
               <span className="mr-1.5 h-1.5 w-1.5 animate-pulse rounded-full bg-current" />
             )}
             {status.label}
           </span>
         </div>
-        
+
         {/* Actions Menu */}
         <div className="absolute top-3 right-3">
           <DropdownMenu.Root>
@@ -149,7 +135,7 @@ export function ProjectCard({
                 <MoreHorizontal className="h-4 w-4" />
               </button>
             </DropdownMenu.Trigger>
-            
+
             <DropdownMenu.Portal>
               <DropdownMenu.Content
                 className="min-w-[180px] rounded-xl border border-white/10 bg-gray-900/95 p-1.5 shadow-xl backdrop-blur-xl animate-in fade-in-0 zoom-in-95"
@@ -163,7 +149,7 @@ export function ProjectCard({
                   <Edit3 className="h-4 w-4" />
                   تعديل
                 </DropdownMenu.Item>
-                
+
                 {project.url && (
                   <DropdownMenu.Item
                     onClick={() => window.open(project.url, '_blank')}
@@ -173,7 +159,7 @@ export function ProjectCard({
                     فتح الرابط
                   </DropdownMenu.Item>
                 )}
-                
+
                 <DropdownMenu.Item
                   onClick={() => onDuplicate?.(project)}
                   className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white outline-none"
@@ -181,9 +167,9 @@ export function ProjectCard({
                   <Copy className="h-4 w-4" />
                   نسخ
                 </DropdownMenu.Item>
-                
+
                 <DropdownMenu.Separator className="my-1 h-px bg-white/10" />
-                
+
                 <DropdownMenu.Item
                   onClick={() => onDelete?.(project)}
                   className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 outline-none"
@@ -196,20 +182,16 @@ export function ProjectCard({
           </DropdownMenu.Root>
         </div>
       </div>
-      
+
       {/* Content */}
       <div className="p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
           <h3 className="font-semibold text-white truncate">{project.name}</h3>
-          {project.framework && (
-            <span className="text-lg shrink-0">{frameworkIcons[project.framework]}</span>
-          )}
+          {project.framework && <span className="text-lg shrink-0">{frameworkIcons[project.framework]}</span>}
         </div>
-        
-        {project.description && (
-          <p className="text-sm text-gray-400 line-clamp-2 mb-3">{project.description}</p>
-        )}
-        
+
+        {project.description && <p className="text-sm text-gray-400 line-clamp-2 mb-3">{project.description}</p>}
+
         {/* Stats */}
         <div className="flex items-center gap-4 text-xs text-gray-500">
           {project.views !== undefined && (
@@ -224,7 +206,7 @@ export function ProjectCard({
           </div>
         </div>
       </div>
-      
+
       {/* Glow Effect */}
       <div className="absolute -bottom-32 -right-32 h-64 w-64 rounded-full bg-purple-500/20 blur-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
     </motion.div>
@@ -237,14 +219,7 @@ interface ProjectGridProps {
 }
 
 export function ProjectGrid({ children, className }: ProjectGridProps) {
-  return (
-    <div className={cn(
-      'grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
-      className
-    )}>
-      {children}
-    </div>
-  );
+  return <div className={cn('grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4', className)}>{children}</div>;
 }
 
 interface EmptyProjectsProps {
@@ -262,9 +237,7 @@ export function EmptyProjects({ onCreateNew }: EmptyProjectsProps) {
         <Zap className="h-10 w-10 text-purple-400" />
       </div>
       <h3 className="mb-2 text-xl font-semibold text-white">لا توجد مشاريع بعد</h3>
-      <p className="mb-6 max-w-md text-gray-400">
-        ابدأ بإنشاء مشروعك الأول باستخدام الذكاء الاصطناعي
-      </p>
+      <p className="mb-6 max-w-md text-gray-400">ابدأ بإنشاء مشروعك الأول باستخدام الذكاء الاصطناعي</p>
       {onCreateNew && (
         <button
           onClick={onCreateNew}

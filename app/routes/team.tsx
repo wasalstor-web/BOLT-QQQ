@@ -6,24 +6,10 @@ import { getUser } from '~/lib/supabase/client';
 import { DashboardLayout } from '~/components/layout/dashboard-layout';
 import { DashboardHeader } from '~/components/layout/sidebar';
 import * as Avatar from '@radix-ui/react-avatar';
-import {
-  UserPlus,
-  Mail,
-  MoreVertical,
-  Shield,
-  Edit3,
-  Trash2,
-  Crown,
-  Sparkles,
-  Search,
-  Filter,
-} from 'lucide-react';
+import { UserPlus, Mail, MoreVertical, Shield, Edit3, Trash2, Crown, Sparkles, Search, Filter } from 'lucide-react';
 
 export const meta: MetaFunction = () => {
-  return [
-    { title: 'الفريق - مبسط إديتر' },
-    { name: 'description', content: 'إدارة أعضاء الفريق' },
-  ];
+  return [{ title: 'الفريق - مبسط إديتر' }, { name: 'description', content: 'إدارة أعضاء الفريق' }];
 };
 
 interface TeamMember {
@@ -93,11 +79,14 @@ export default function TeamPage() {
     const loadData = async () => {
       try {
         const { user: currentUser } = await getUser();
-        // تم تعطيل التحقق مؤقتاً
-        // if (!currentUser) {
-        //   navigate('/login');
-        //   return;
-        // }
+
+        /*
+         * تم تعطيل التحقق مؤقتاً
+         * if (!currentUser) {
+         *   navigate('/login');
+         *   return;
+         * }
+         */
         setUser(currentUser || { email: 'demo@example.com', user_metadata: { name: 'مستخدم تجريبي' } });
       } catch (err) {
         console.error('Team error:', err);
@@ -109,22 +98,35 @@ export default function TeamPage() {
     loadData();
   }, [navigate]);
 
-  const filteredMembers = mockTeamMembers.filter(member =>
-    member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    member.email.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredMembers = mockTeamMembers.filter(
+    (member) =>
+      member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      member.email.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const formatLastActive = (date?: Date) => {
-    if (!date) return 'لم يتصل بعد';
+    if (!date) {
+      return 'لم يتصل بعد';
+    }
+
     const now = new Date();
     const diff = now.getTime() - date.getTime();
     const minutes = Math.floor(diff / (1000 * 60));
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-    if (minutes < 5) return 'متصل الآن';
-    if (minutes < 60) return `منذ ${minutes} دقيقة`;
-    if (hours < 24) return `منذ ${hours} ساعة`;
+    if (minutes < 5) {
+      return 'متصل الآن';
+    }
+
+    if (minutes < 60) {
+      return `منذ ${minutes} دقيقة`;
+    }
+
+    if (hours < 24) {
+      return `منذ ${hours} ساعة`;
+    }
+
     return `منذ ${days} يوم`;
   };
 
@@ -154,10 +156,7 @@ export default function TeamPage() {
     >
       <div className="p-6 lg:p-8" dir="rtl">
         <div className="flex items-center justify-between mb-8">
-          <DashboardHeader
-            title="الفريق"
-            subtitle={`${mockTeamMembers.length} أعضاء`}
-          />
+          <DashboardHeader title="الفريق" subtitle={`${mockTeamMembers.length} أعضاء`} />
 
           <button
             onClick={() => setShowInviteModal(true)}
@@ -199,7 +198,9 @@ export default function TeamPage() {
                     <div className="relative">
                       <Avatar.Root className="h-14 w-14 rounded-full overflow-hidden">
                         <Avatar.Image src={member.avatar} alt={member.name} className="object-cover" />
-                        <Avatar.Fallback className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${roleInfo.color} text-white text-lg font-bold`}>
+                        <Avatar.Fallback
+                          className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${roleInfo.color} text-white text-lg font-bold`}
+                        >
                           {member.name.charAt(0)}
                         </Avatar.Fallback>
                       </Avatar.Root>
@@ -222,12 +223,12 @@ export default function TeamPage() {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${roleInfo.color} text-white`}>
+                  <span
+                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${roleInfo.color} text-white`}
+                  >
                     {roleInfo.label}
                   </span>
-                  <span className="text-xs text-gray-500">
-                    {formatLastActive(member.lastActive)}
-                  </span>
+                  <span className="text-xs text-gray-500">{formatLastActive(member.lastActive)}</span>
                 </div>
 
                 {member.status === 'pending' && (
@@ -249,7 +250,7 @@ export default function TeamPage() {
               className="bg-gray-900 border border-white/10 rounded-2xl p-6 w-full max-w-md mx-4"
             >
               <h2 className="text-xl font-bold text-white mb-4">دعوة عضو جديد</h2>
-              
+
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm text-gray-400 mb-2">البريد الإلكتروني</label>

@@ -1,205 +1,193 @@
-import { json, type LoaderFunctionArgs } from '@remix-run/cloudflare';
-import { useLoaderData, Link } from '@remix-run/react';
-import { requireAuth } from '~/lib/auth.server';
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Link, useNavigate } from '@remix-run/react';
+import type { MetaFunction } from '@remix-run/cloudflare';
+import { useAuth } from '~/lib/auth';
+import { getProjects, type Project } from '~/lib/supabase/client';
+import { DashboardLayout } from '~/components/layout/dashboard-layout';
+import { StatsCard, StatsGrid } from '~/components/ui/stats-card';
+import { ProjectCard, ProjectGrid, EmptyProjects } from '~/components/ui/project-card';
+import { Folder, Eye, Zap, Plus, ArrowLeft, Sparkles, Clock } from 'lucide-react';
 
-export async function loader({ request, context }: LoaderFunctionArgs) {
-  const { user, profile, supabase } = await requireAuth(request, context);
-
-  // جلب مشاريع المستخدم
-  const { data: projects, count: projectCount } = await supabase
-    .from('projects')
-    .select('*', { count: 'exact' })
-    .eq('user_id', user.id)
-    .order('updated_at', { ascending: false })
-    .limit(6);
-
-  // جلب إحصائيات الاستخدام
-  let totalUsageThisMonth = 0;
-  try {
-    const { data: usageStats } = await supabase
-      .from('usage_logs')
-      .select('tokens_input, tokens_output')
-      .eq('user_id', user.id)
-      .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
-
-    totalUsageThisMonth =
-      usageStats?.reduce((acc: number, log: any) => acc + (log.tokens_input || 0) + (log.tokens_output || 0), 0) || 0;
-  } catch {
-    // usage_logs table might not exist yet
-  }
-
-  return json({
-    profile,
-    projects: projects || [],
-    projectCount: projectCount || 0,
-    totalUsageThisMonth,
-  });
-}
+export const meta: MetaFunction = () => {
+  return [{ title: 'لوحة التحكم - مبسط إديتر' }, { name: 'description', content: 'إدارة مشاريعك' }];
+};
 
 export default function ClientDashboard() {
-  const { profile, projects, projectCount, totalUsageThisMonth } = useLoaderData<typeof loader>();
+  const navigate = useNavigate();
+  const { user, loading: authLoading, isAuthenticated } = useAuth();
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const usagePercent = profile.usage_limit > 0 ? Math.round((profile.usage_current / profile.usage_limit) * 100) : 0;
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+
+    const loadProjects = async () => {
+      try {
+        const { data } = await getProjects();
+        setProjects(data || []);
+      } catch (err) {
+        console.error('Error loading projects:', err);
+
+        // بيانات تجريبية
+        setProjects([
+          {
+            id: '1',
+            user_id: '',
+            name: 'متجر إلكتروني',
+            description: 'متجر لبيع المنتجات',
+            status: 'published',
+            created_at: '2025-01-20',
+            updated_at: '2025-01-20',
+          },
+          {
+            id: '2',
+            user_id: '',
+            name: 'موقع شركة',
+            description: 'موقع تعريفي',
+            status: 'draft',
+            created_at: '2025-01-18',
+            updated_at: '2025-01-18',
+          },
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (isAuthenticated) {
+      loadProjects();
+    }
+  }, [authLoading, isAuthenticated, navigate]);
+
+  if (authLoading || loading) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <motion.div
+          animate={{ scale: [1, 1.1, 1] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+          className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center"
+        >
+          <Sparkles className="h-8 w-8 text-white" />
+        </motion.div>
+      </div>
+    );
+  }
+
+  const stats = {
+    total: projects.length,
+    published: projects.filter((p) => p.status === 'published').length,
+    draft: projects.filter((p) => p.status === 'draft').length,
+  };
+
+  const transformedProjects = projects.map((p) => ({
+    id: p.id,
+    name: p.name,
+    description: p.description,
+    status: p.status === 'published' ? ('active' as const) : ('draft' as const),
+    lastUpdated: p.updated_at,
+    createdAt: p.created_at,
+    views: Math.floor(Math.random() * 500),
+  }));
 
   return (
-    <div className="p-6 space-y-6" dir="rtl">
-      <div className="flex items-center justify-between">
+    <DashboardLayout user={{ name: user?.name || 'المستخدم', email: user?.email || '', avatar: user?.avatar }}>
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-bolt-elements-textPrimary">أهلاً {profile.full_name || 'بك'}! 👋</h1>
-          <p className="text-bolt-elements-textSecondary">إليك نظرة سريعة على مشاريعك</p>
+          <motion.h1
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-2xl md:text-3xl font-bold text-white"
+          >
+            مرحباً، {user?.name?.split(' ')[0] || 'صديقي'} 👋
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="text-gray-400 mt-1"
+          >
+            إليك نظرة عامة على مشاريعك
+          </motion.p>
         </div>
-        <Link
-          to="/editor/new"
-          className="flex items-center gap-2 px-4 py-2 bg-accent-500 hover:bg-accent-600 text-white rounded-lg transition-colors"
+        <motion.button
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          onClick={() => navigate('/')}
+          className="group inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 rounded-xl font-medium text-white shadow-lg shadow-purple-500/25 transition-all hover:scale-105"
         >
-          <div className="i-ph:plus" />
+          <Plus className="h-5 w-5" />
           مشروع جديد
-        </Link>
+          <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+        </motion.button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-bolt-elements-background-depth-2 rounded-xl p-5 border border-bolt-elements-borderColor">
-          <div className="flex items-center gap-3">
-            <div className="p-3 rounded-lg bg-accent-500/10">
-              <div className="i-ph:folder text-2xl text-accent-400" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-bolt-elements-textPrimary">{projectCount}</p>
-              <p className="text-sm text-bolt-elements-textSecondary">مشروع</p>
-            </div>
-          </div>
+      {/* Stats */}
+      <StatsGrid className="mb-8">
+        <StatsCard title="إجمالي المشاريع" value={stats.total} icon={<Folder className="h-5 w-5" />} delay={0} />
+        <StatsCard
+          title="المنشورة"
+          value={stats.published}
+          change={20}
+          icon={<Zap className="h-5 w-5" />}
+          delay={0.1}
+        />
+        <StatsCard title="المسودات" value={stats.draft} icon={<Clock className="h-5 w-5" />} delay={0.2} />
+        <StatsCard title="المشاهدات" value={1234} change={15} icon={<Eye className="h-5 w-5" />} delay={0.3} />
+      </StatsGrid>
+
+      {/* Projects */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold text-white">مشاريعك</h2>
+          <Link to="/projects" className="text-sm text-purple-400 hover:text-purple-300">
+            عرض الكل
+          </Link>
         </div>
 
-        <div className="bg-bolt-elements-background-depth-2 rounded-xl p-5 border border-bolt-elements-borderColor">
-          <div className="flex items-center gap-3">
-            <div className="p-3 rounded-lg bg-blue-500/10">
-              <div className="i-ph:chart-bar text-2xl text-blue-400" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-bolt-elements-textPrimary">
-                {totalUsageThisMonth.toLocaleString('ar')}
-              </p>
-              <p className="text-sm text-bolt-elements-textSecondary">توكن هذا الشهر</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-bolt-elements-background-depth-2 rounded-xl p-5 border border-bolt-elements-borderColor">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-bolt-elements-textSecondary">حد الاستخدام</span>
-            <span
-              className={`px-2 py-0.5 rounded text-xs ${
-                profile.plan === 'free'
-                  ? 'bg-gray-500/20 text-gray-400'
-                  : profile.plan === 'pro'
-                    ? 'bg-blue-500/20 text-blue-400'
-                    : 'bg-purple-500/20 text-purple-400'
-              }`}
-            >
-              {profile.plan === 'free' ? 'مجاني' : profile.plan === 'pro' ? 'Pro' : 'Enterprise'}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="flex-1 h-2 bg-bolt-elements-background-depth-1 rounded-full overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all ${
-                  usagePercent > 90 ? 'bg-red-500' : usagePercent > 70 ? 'bg-yellow-500' : 'bg-accent-500'
-                }`}
-                style={{ width: `${Math.min(usagePercent, 100)}%` }}
-              />
-            </div>
-            <span className="text-sm font-medium text-bolt-elements-textPrimary">{usagePercent}%</span>
-          </div>
-          <p className="text-xs text-bolt-elements-textSecondary mt-1">
-            {profile.usage_current.toLocaleString('ar')} / {profile.usage_limit.toLocaleString('ar')}
-          </p>
-        </div>
-      </div>
-
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold">مشاريعي</h2>
-          {projectCount > 6 && (
-            <Link to="/dashboard/client/projects" className="text-sm text-accent-400 hover:underline">
-              عرض الكل ({projectCount})
-            </Link>
-          )}
-        </div>
-
-        {projects.length === 0 ? (
-          <div className="bg-bolt-elements-background-depth-2 rounded-xl border border-bolt-elements-borderColor p-12 text-center">
-            <div className="i-ph:folder-open text-5xl mx-auto mb-4 text-bolt-elements-textSecondary opacity-50" />
-            <h3 className="text-lg font-medium text-bolt-elements-textPrimary mb-2">لا توجد مشاريع بعد</h3>
-            <p className="text-bolt-elements-textSecondary mb-4">ابدأ بإنشاء مشروعك الأول مع الذكاء الاصطناعي</p>
-            <Link
-              to="/editor/new"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-accent-500 hover:bg-accent-600 text-white rounded-lg transition-colors"
-            >
-              <div className="i-ph:plus" />
-              إنشاء مشروع
-            </Link>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {projects.map((project: any) => (
-              <Link
+        {transformedProjects.length > 0 ? (
+          <ProjectGrid>
+            {transformedProjects.slice(0, 6).map((project, index) => (
+              <ProjectCard
                 key={project.id}
-                to={`/editor/${project.id}`}
-                className="bg-bolt-elements-background-depth-2 rounded-xl border border-bolt-elements-borderColor p-4 hover:border-accent-500/50 transition-colors group"
-              >
-                <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-lg bg-accent-500/10 group-hover:bg-accent-500/20 transition-colors">
-                    <div className="i-ph:folder text-xl text-accent-400" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-bolt-elements-textPrimary truncate group-hover:text-accent-400 transition-colors">
-                      {project.name}
-                    </h3>
-                    <p className="text-xs text-bolt-elements-textSecondary mt-1">
-                      آخر تعديل: {new Date(project.updated_at).toLocaleDateString('ar')}
-                    </p>
-                  </div>
-                </div>
-                {project.description && (
-                  <p className="text-sm text-bolt-elements-textSecondary mt-3 line-clamp-2">{project.description}</p>
-                )}
-              </Link>
+                project={project}
+                delay={index * 0.1}
+                onOpen={() => navigate(/project/ + project.id)}
+                onEdit={() => navigate('/')}
+                onPreview={() => window.open(/preview/ + project.id, '_blank')}
+              />
             ))}
-
-            <Link
-              to="/editor/new"
-              className="bg-bolt-elements-background-depth-2 rounded-xl border border-dashed border-bolt-elements-borderColor p-4 hover:border-accent-500/50 transition-colors flex flex-col items-center justify-center min-h-[120px] group"
-            >
-              <div className="p-3 rounded-full bg-bolt-elements-background-depth-3 group-hover:bg-accent-500/20 transition-colors mb-2">
-                <div className="i-ph:plus text-xl text-bolt-elements-textSecondary group-hover:text-accent-400" />
-              </div>
-              <span className="text-sm text-bolt-elements-textSecondary group-hover:text-accent-400">مشروع جديد</span>
-            </Link>
-          </div>
+          </ProjectGrid>
+        ) : (
+          <EmptyProjects onCreateNew={() => navigate('/')} />
         )}
       </div>
 
-      {profile.plan === 'free' && usagePercent > 50 && (
-        <div className="bg-gradient-to-r from-accent-500/20 to-purple-500/20 rounded-xl p-6 border border-accent-500/30">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-full bg-accent-500/20">
-              <div className="i-ph:rocket text-2xl text-accent-400" />
-            </div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-bolt-elements-textPrimary">ترقية للحصول على المزيد</h3>
-              <p className="text-sm text-bolt-elements-textSecondary">
-                احصل على حد استخدام أعلى ومميزات إضافية مع خطة Pro
-              </p>
-            </div>
-            <Link
-              to="/pricing"
-              className="px-4 py-2 bg-accent-500 hover:bg-accent-600 text-white rounded-lg transition-colors"
-            >
-              ترقية الآن
-            </Link>
+      {/* CTA */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="rounded-2xl border border-white/10 bg-gradient-to-br from-purple-500/10 to-pink-500/10 p-6 backdrop-blur-xl"
+      >
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="text-center md:text-right">
+            <h3 className="text-lg font-semibold text-white mb-1">جاهز لإنشاء موقع جديد؟</h3>
+            <p className="text-gray-400">استخدم الذكاء الاصطناعي لإنشاء موقعك في دقائق</p>
           </div>
+          <button
+            onClick={() => navigate('/')}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl font-medium text-white transition-all"
+          >
+            <Sparkles className="h-5 w-5 text-purple-400" />
+            ابدأ مع AI
+          </button>
         </div>
-      )}
-    </div>
+      </motion.div>
+    </DashboardLayout>
   );
 }

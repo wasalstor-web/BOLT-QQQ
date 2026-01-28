@@ -1,6 +1,8 @@
-// ═══════════════════════════════════════════════════════════════════
-// نظام التخزين المحلي الشامل
-// ═══════════════════════════════════════════════════════════════════
+/*
+ * ═══════════════════════════════════════════════════════════════════
+ * نظام التخزين المحلي الشامل
+ * ═══════════════════════════════════════════════════════════════════
+ */
 
 export const STORAGE_KEYS = {
   API_KEYS: 'bolt_api_keys',
@@ -11,9 +13,11 @@ export const STORAGE_KEYS = {
   RECENT_PROJECTS: 'bolt_recent_projects',
 } as const;
 
-// ═══════════════════════════════════════════════════════════════════
-// الأنواع
-// ═══════════════════════════════════════════════════════════════════
+/*
+ * ═══════════════════════════════════════════════════════════════════
+ * الأنواع
+ * ═══════════════════════════════════════════════════════════════════
+ */
 
 export interface ApiKeys {
   anthropic?: string;
@@ -77,19 +81,30 @@ export interface RecentProject {
   thumbnail?: string;
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// الدوال الأساسية
-// ═══════════════════════════════════════════════════════════════════
+/*
+ * ═══════════════════════════════════════════════════════════════════
+ * الدوال الأساسية
+ * ═══════════════════════════════════════════════════════════════════
+ */
 
 export function loadFromStorage<T>(key: string, defaultValue: T): T {
-  if (typeof window === 'undefined') return defaultValue;
+  if (typeof window === 'undefined') {
+    return defaultValue;
+  }
+
   try {
     const stored = localStorage.getItem(key);
-    if (!stored) return defaultValue;
+
+    if (!stored) {
+      return defaultValue;
+    }
+
     const parsed = JSON.parse(stored);
+
     if (typeof defaultValue === 'object' && !Array.isArray(defaultValue)) {
       return { ...defaultValue, ...parsed };
     }
+
     return parsed;
   } catch {
     console.warn(`Failed to load ${key} from localStorage`);
@@ -98,10 +113,14 @@ export function loadFromStorage<T>(key: string, defaultValue: T): T {
 }
 
 export function saveToStorage<T>(key: string, value: T): boolean {
-  if (typeof window === 'undefined') return false;
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
   try {
     localStorage.setItem(key, JSON.stringify(value));
     window.dispatchEvent(new StorageEvent('storage', { key, newValue: JSON.stringify(value) }));
+
     return true;
   } catch (error) {
     console.error(`Failed to save ${key} to localStorage:`, error);
@@ -110,13 +129,18 @@ export function saveToStorage<T>(key: string, value: T): boolean {
 }
 
 export function removeFromStorage(key: string): void {
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined') {
+    return;
+  }
+
   localStorage.removeItem(key);
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// القيم الافتراضية
-// ═══════════════════════════════════════════════════════════════════
+/*
+ * ═══════════════════════════════════════════════════════════════════
+ * القيم الافتراضية
+ * ═══════════════════════════════════════════════════════════════════
+ */
 
 export const DEFAULT_PREFERENCES: Preferences = {
   theme: 'dark',
@@ -152,9 +176,11 @@ export const DEFAULT_EDITOR_STATE: EditorState = {
   showPreview: true,
 };
 
-// ═══════════════════════════════════════════════════════════════════
-// API المبسط
-// ═══════════════════════════════════════════════════════════════════
+/*
+ * ═══════════════════════════════════════════════════════════════════
+ * API المبسط
+ * ═══════════════════════════════════════════════════════════════════
+ */
 
 export const storage = {
   // API Keys
@@ -167,6 +193,7 @@ export const storage = {
   removeApiKey: (provider: keyof ApiKeys): boolean => {
     const current = storage.getApiKeys();
     delete current[provider];
+
     return storage.setApiKeys(current);
   },
 
@@ -188,6 +215,7 @@ export const storage = {
   removeIntegration: (id: string): boolean => {
     const current = storage.getIntegrations();
     delete current[id];
+
     return storage.setIntegrations(current);
   },
 
@@ -206,11 +234,13 @@ export const storage = {
   setChatDraft: (projectId: string, draft: string): boolean => {
     const drafts = loadFromStorage<Record<string, string>>(STORAGE_KEYS.CHAT_DRAFTS, {});
     drafts[projectId] = draft;
+
     return saveToStorage(STORAGE_KEYS.CHAT_DRAFTS, drafts);
   },
   clearChatDraft: (projectId: string): boolean => {
     const drafts = loadFromStorage<Record<string, string>>(STORAGE_KEYS.CHAT_DRAFTS, {});
     delete drafts[projectId];
+
     return saveToStorage(STORAGE_KEYS.CHAT_DRAFTS, drafts);
   },
 
@@ -219,6 +249,7 @@ export const storage = {
   addRecentProject: (project: RecentProject): boolean => {
     const projects = storage.getRecentProjects().filter((p) => p.id !== project.id);
     projects.unshift({ ...project, lastOpened: new Date().toISOString() });
+
     return saveToStorage(STORAGE_KEYS.RECENT_PROJECTS, projects.slice(0, 10));
   },
 
@@ -228,12 +259,16 @@ export const storage = {
   },
 };
 
-// ═══════════════════════════════════════════════════════════════════
-// Hook للاستماع للتغييرات
-// ═══════════════════════════════════════════════════════════════════
+/*
+ * ═══════════════════════════════════════════════════════════════════
+ * Hook للاستماع للتغييرات
+ * ═══════════════════════════════════════════════════════════════════
+ */
 
 export function useStorageListener<T>(key: string, callback: (value: T) => void) {
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined') {
+    return;
+  }
 
   const handler = (event: StorageEvent) => {
     if (event.key === key && event.newValue) {
@@ -246,5 +281,6 @@ export function useStorageListener<T>(key: string, callback: (value: T) => void)
   };
 
   window.addEventListener('storage', handler);
+
   return () => window.removeEventListener('storage', handler);
 }

@@ -27,19 +27,19 @@ export function formatNumber(num: number, options?: Intl.NumberFormatOptions): s
  */
 export function formatDate(date: Date | string | number, formatStr?: string): string {
   const d = new Date(date);
-  
+
   if (formatStr) {
     return format(d, formatStr);
   }
-  
+
   if (isToday(d)) {
     return `اليوم ${format(d, 'HH:mm')}`;
   }
-  
+
   if (isYesterday(d)) {
     return `أمس ${format(d, 'HH:mm')}`;
   }
-  
+
   return format(d, 'dd MMM yyyy');
 }
 
@@ -67,9 +67,11 @@ export function formatCurrency(amount: number, currency = 'USD'): string {
  */
 export function formatPercentage(value: number, options?: { showSign?: boolean }): string {
   const formatted = `${Math.abs(value).toFixed(1)}%`;
+
   if (options?.showSign && value !== 0) {
     return value > 0 ? `+${formatted}` : `-${formatted}`;
   }
+
   return formatted;
 }
 
@@ -77,10 +79,14 @@ export function formatPercentage(value: number, options?: { showSign?: boolean }
  * Format file size
  */
 export function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 B';
+  if (bytes === 0) {
+    return '0 B';
+  }
+
   const k = 1024;
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
+
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 }
 
@@ -88,7 +94,10 @@ export function formatFileSize(bytes: number): string {
  * Truncate text with ellipsis
  */
 export function truncate(str: string, length: number): string {
-  if (str.length <= length) return str;
+  if (str.length <= length) {
+    return str;
+  }
+
   return `${str.slice(0, length)}...`;
 }
 
@@ -114,14 +123,14 @@ export function sleep(ms: number): Promise<void> {
 /**
  * Debounce function
  */
-export function debounce<T extends (...args: any[]) => any>(
-  func: T,
-  wait: number
-): (...args: Parameters<T>) => void {
+export function debounce<T extends (...args: any[]) => any>(func: T, wait: number): (...args: Parameters<T>) => void {
   let timeout: NodeJS.Timeout | null = null;
-  
+
   return (...args: Parameters<T>) => {
-    if (timeout) clearTimeout(timeout);
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+
     timeout = setTimeout(() => func(...args), wait);
   };
 }
@@ -149,12 +158,13 @@ export function generateAvatarColor(name: string): string {
     'bg-pink-500',
     'bg-rose-500',
   ];
-  
+
   let hash = 0;
+
   for (let i = 0; i < name.length; i++) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash);
   }
-  
+
   return colors[Math.abs(hash) % colors.length];
 }
 

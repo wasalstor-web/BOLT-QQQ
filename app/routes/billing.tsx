@@ -5,24 +5,10 @@ import type { MetaFunction } from '@remix-run/cloudflare';
 import { getUser } from '~/lib/supabase/client';
 import { DashboardLayout } from '~/components/layout/dashboard-layout';
 import { DashboardHeader } from '~/components/layout/sidebar';
-import {
-  CreditCard,
-  Check,
-  Sparkles,
-  Zap,
-  Star,
-  Crown,
-  Download,
-  ExternalLink,
-  Calendar,
-  Receipt,
-} from 'lucide-react';
+import { CreditCard, Check, Sparkles, Zap, Star, Crown, Download, ExternalLink, Calendar, Receipt } from 'lucide-react';
 
 export const meta: MetaFunction = () => {
-  return [
-    { title: 'الفوترة - مبسط إديتر' },
-    { name: 'description', content: 'إدارة اشتراكك والفواتير' },
-  ];
+  return [{ title: 'الفوترة - مبسط إديتر' }, { name: 'description', content: 'إدارة اشتراكك والفواتير' }];
 };
 
 const plans = [
@@ -33,12 +19,7 @@ const plans = [
     description: 'للمبتدئين والمشاريع الصغيرة',
     icon: Zap,
     color: 'gray',
-    features: [
-      '3 مشاريع',
-      '500 رسالة AI شهرياً',
-      'نشر على نطاق فرعي',
-      'دعم مجتمعي',
-    ],
+    features: ['3 مشاريع', '500 رسالة AI شهرياً', 'نشر على نطاق فرعي', 'دعم مجتمعي'],
   },
   {
     id: 'pro',
@@ -64,14 +45,7 @@ const plans = [
     description: 'للشركات الكبيرة',
     icon: Crown,
     color: 'yellow',
-    features: [
-      'كل مميزات الاحترافي',
-      'SSO ومصادقة مخصصة',
-      'SLA مضمون',
-      'دعم مخصص 24/7',
-      'تخصيص كامل',
-      'API متقدمة',
-    ],
+    features: ['كل مميزات الاحترافي', 'SSO ومصادقة مخصصة', 'SLA مضمون', 'دعم مخصص 24/7', 'تخصيص كامل', 'API متقدمة'],
   },
 ];
 
@@ -91,11 +65,14 @@ export default function BillingPage() {
     const loadData = async () => {
       try {
         const { user: currentUser } = await getUser();
-        // تم تعطيل التحقق مؤقتاً
-        // if (!currentUser) {
-        //   navigate('/login');
-        //   return;
-        // }
+
+        /*
+         * تم تعطيل التحقق مؤقتاً
+         * if (!currentUser) {
+         *   navigate('/login');
+         *   return;
+         * }
+         */
         setUser(currentUser || { email: 'demo@example.com', user_metadata: { name: 'مستخدم تجريبي' } });
       } catch (err) {
         console.error('Billing error:', err);
@@ -132,10 +109,7 @@ export default function BillingPage() {
       }}
     >
       <div className="p-6 lg:p-8" dir="rtl">
-        <DashboardHeader
-          title="الفوترة والاشتراك"
-          subtitle="إدارة خطتك والمدفوعات"
-        />
+        <DashboardHeader title="الفوترة والاشتراك" subtitle="إدارة خطتك والمدفوعات" />
 
         {/* Current Plan */}
         <motion.div
@@ -186,11 +160,15 @@ export default function BillingPage() {
                   </div>
                 )}
 
-                <div className={`p-3 rounded-xl w-fit mb-4 ${
-                  plan.color === 'purple' ? 'bg-purple-500/20 text-purple-400' :
-                  plan.color === 'yellow' ? 'bg-yellow-500/20 text-yellow-400' :
-                  'bg-gray-500/20 text-gray-400'
-                }`}>
+                <div
+                  className={`p-3 rounded-xl w-fit mb-4 ${
+                    plan.color === 'purple'
+                      ? 'bg-purple-500/20 text-purple-400'
+                      : plan.color === 'yellow'
+                        ? 'bg-yellow-500/20 text-yellow-400'
+                        : 'bg-gray-500/20 text-gray-400'
+                  }`}
+                >
                   <PlanIcon className="h-6 w-6" />
                 </div>
 
@@ -205,11 +183,15 @@ export default function BillingPage() {
                 <ul className="space-y-3 mb-6">
                   {plan.features.map((feature, i) => (
                     <li key={i} className="flex items-center gap-2 text-sm text-gray-300">
-                      <Check className={`h-4 w-4 ${
-                        plan.color === 'purple' ? 'text-purple-400' :
-                        plan.color === 'yellow' ? 'text-yellow-400' :
-                        'text-gray-400'
-                      }`} />
+                      <Check
+                        className={`h-4 w-4 ${
+                          plan.color === 'purple'
+                            ? 'text-purple-400'
+                            : plan.color === 'yellow'
+                              ? 'text-yellow-400'
+                              : 'text-gray-400'
+                        }`}
+                      />
                       {feature}
                     </li>
                   ))}
@@ -220,8 +202,8 @@ export default function BillingPage() {
                     isCurrentPlan
                       ? 'bg-white/10 text-gray-400 cursor-default'
                       : plan.popular
-                      ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:shadow-lg hover:shadow-purple-500/25'
-                      : 'bg-white/10 hover:bg-white/20 text-white'
+                        ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:shadow-lg hover:shadow-purple-500/25'
+                        : 'bg-white/10 hover:bg-white/20 text-white'
                   }`}
                   disabled={isCurrentPlan}
                 >
@@ -241,9 +223,7 @@ export default function BillingPage() {
         >
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-white">طريقة الدفع</h3>
-            <button className="text-purple-400 hover:text-purple-300 text-sm transition-colors">
-              إضافة بطاقة
-            </button>
+            <button className="text-purple-400 hover:text-purple-300 text-sm transition-colors">إضافة بطاقة</button>
           </div>
 
           <div className="flex items-center gap-4 p-4 bg-white/5 border border-white/10 rounded-xl">
@@ -254,9 +234,7 @@ export default function BillingPage() {
               <p className="text-white font-medium">•••• •••• •••• 4242</p>
               <p className="text-gray-400 text-sm">تنتهي 12/2026</p>
             </div>
-            <button className="text-gray-400 hover:text-white text-sm transition-colors">
-              تعديل
-            </button>
+            <button className="text-gray-400 hover:text-white text-sm transition-colors">تعديل</button>
           </div>
         </motion.div>
 
@@ -296,9 +274,7 @@ export default function BillingPage() {
 
                 <div className="flex items-center gap-4">
                   <span className="text-white font-medium">${invoice.amount}</span>
-                  <span className="px-2 py-0.5 bg-green-500/20 text-green-400 rounded-full text-xs">
-                    مدفوعة
-                  </span>
+                  <span className="px-2 py-0.5 bg-green-500/20 text-green-400 rounded-full text-xs">مدفوعة</span>
                   <button className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
                     <Download className="h-4 w-4" />
                   </button>

@@ -6,25 +6,10 @@ import { getUser, signOut } from '~/lib/supabase/client';
 import { DashboardLayout } from '~/components/layout/dashboard-layout';
 import { DashboardHeader } from '~/components/layout/sidebar';
 import * as Avatar from '@radix-ui/react-avatar';
-import {
-  User,
-  Mail,
-  Calendar,
-  Camera,
-  Save,
-  Sparkles,
-  Lock,
-  Bell,
-  Globe,
-  Palette,
-  ArrowRight,
-} from 'lucide-react';
+import { User, Mail, Calendar, Camera, Save, Sparkles, Lock, Bell, Globe, Palette, ArrowRight } from 'lucide-react';
 
 export const meta: MetaFunction = () => {
-  return [
-    { title: 'الملف الشخصي - مبسط إديتر' },
-    { name: 'description', content: 'إعدادات حسابك الشخصي' },
-  ];
+  return [{ title: 'الملف الشخصي - مبسط إديتر' }, { name: 'description', content: 'إعدادات حسابك الشخصي' }];
 };
 
 export default function ProfilePage() {
@@ -44,13 +29,20 @@ export default function ProfilePage() {
     const loadData = async () => {
       try {
         const { user: currentUser } = await getUser();
-        // تم تعطيل التحقق مؤقتاً
-        // if (!currentUser) {
-        //   navigate('/login');
-        //   return;
-        // }
-        const userToSet = currentUser || { email: 'demo@example.com', user_metadata: { name: 'مستخدم تجريبي', bio: '', website: '', location: '' } };
+
+        /*
+         * تم تعطيل التحقق مؤقتاً
+         * if (!currentUser) {
+         *   navigate('/login');
+         *   return;
+         * }
+         */
+        const userToSet = currentUser || {
+          email: 'demo@example.com',
+          user_metadata: { name: 'مستخدم تجريبي', bio: '', website: '', location: '' },
+        };
         setUser(userToSet);
+
         const metadata = userToSet.user_metadata as any;
         setFormData({
           name: metadata?.name || userToSet.email?.split('@')[0] || '',
@@ -71,8 +63,9 @@ export default function ProfilePage() {
 
   const handleSave = async () => {
     setSaving(true);
+
     // Simulate save
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     setSaving(false);
   };
 
@@ -106,10 +99,7 @@ export default function ProfilePage() {
       }}
     >
       <div className="p-6 lg:p-8 max-w-4xl" dir="rtl">
-        <DashboardHeader
-          title="الملف الشخصي"
-          subtitle="إدارة معلومات حسابك"
-        />
+        <DashboardHeader title="الملف الشخصي" subtitle="إدارة معلومات حسابك" />
 
         <div className="grid gap-8">
           {/* Avatar Section */}
@@ -119,15 +109,11 @@ export default function ProfilePage() {
             className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6"
           >
             <h3 className="text-lg font-semibold text-white mb-6">الصورة الشخصية</h3>
-            
+
             <div className="flex items-center gap-6">
               <div className="relative group">
                 <Avatar.Root className="h-24 w-24 rounded-2xl overflow-hidden">
-                  <Avatar.Image
-                    src={user?.user_metadata?.avatar_url}
-                    alt={formData.name}
-                    className="object-cover"
-                  />
+                  <Avatar.Image src={user?.user_metadata?.avatar_url} alt={formData.name} className="object-cover" />
                   <Avatar.Fallback className="flex h-full w-full items-center justify-center bg-gradient-to-br from-purple-500 to-blue-500 text-white text-2xl font-bold">
                     {formData.name.charAt(0)}
                   </Avatar.Fallback>
@@ -136,7 +122,7 @@ export default function ProfilePage() {
                   <Camera className="h-6 w-6 text-white" />
                 </button>
               </div>
-              
+
               <div>
                 <p className="text-white font-medium mb-1">تغيير الصورة</p>
                 <p className="text-gray-400 text-sm mb-3">JPG, PNG أو GIF. الحد الأقصى 2MB</p>
@@ -155,7 +141,7 @@ export default function ProfilePage() {
             className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6"
           >
             <h3 className="text-lg font-semibold text-white mb-6">المعلومات الشخصية</h3>
-            
+
             <div className="grid gap-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -233,7 +219,7 @@ export default function ProfilePage() {
             className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6"
           >
             <h3 className="text-lg font-semibold text-white mb-6">روابط سريعة</h3>
-            
+
             <div className="grid gap-4">
               <button
                 onClick={() => navigate('/settings')}
@@ -272,10 +258,7 @@ export default function ProfilePage() {
 
           {/* Save Button */}
           <div className="flex items-center justify-between">
-            <button
-              onClick={handleLogout}
-              className="px-6 py-2.5 text-red-400 hover:text-red-300 transition-colors"
-            >
+            <button onClick={handleLogout} className="px-6 py-2.5 text-red-400 hover:text-red-300 transition-colors">
               تسجيل الخروج
             </button>
 
@@ -293,5 +276,3 @@ export default function ProfilePage() {
     </DashboardLayout>
   );
 }
-
-
