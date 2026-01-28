@@ -1,306 +1,304 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from '@remix-run/react';
 import type { MetaFunction } from '@remix-run/cloudflare';
-import { getUser } from '~/lib/supabase/client';
+import { useRequireAuth } from '~/lib/auth/useAuth';
 import { DashboardLayout } from '~/components/layout/dashboard-layout';
 import { DashboardHeader } from '~/components/layout/sidebar';
-import { storage } from '~/lib/storage';
-import {
-  Puzzle,
-  Github,
-  Cloud,
-  Database,
-  MessageSquare,
-  Mail,
-  CreditCard,
-  BarChart3,
-  Shield,
-  Sparkles,
-  Check,
-  ExternalLink,
-  Settings,
-  Zap,
+import { 
+  Puzzle, GitBranch, Cloud, Database, Zap, Link2, 
+  Check, X, ExternalLink, Settings, Loader2, Search 
 } from 'lucide-react';
 
 export const meta: MetaFunction = () => {
-  return [{ title: 'التكاملات - مبسط إديتر' }, { name: 'description', content: 'إدارة تكاملات التطبيقات' }];
+  return [{ title: 'التكاملات - مبسط إديتر' }, { name: 'description', content: 'إدارة التكاملات والخدمات الخارجية' }];
 };
 
 interface Integration {
   id: string;
   name: string;
+  nameEn: string;
   description: string;
-  icon: React.ReactNode;
-  category: 'development' | 'deployment' | 'analytics' | 'communication' | 'payment';
-  isConnected: boolean;
-  isPopular?: boolean;
-  isNew?: boolean;
+  icon: React.ElementType;
+  color: string;
+  category: 'hosting' | 'database' | 'git' | 'ai' | 'analytics';
+  connected: boolean;
+  popular?: boolean;
 }
 
 const integrations: Integration[] = [
   {
     id: 'github',
     name: 'GitHub',
-    description: 'ربط مستودعات GitHub واستيراد المشاريع',
-    icon: <Github className="h-6 w-6" />,
-    category: 'development',
-    isConnected: true,
-    isPopular: true,
+    nameEn: 'GitHub',
+    description: 'ربط مستودعات GitHub لنشر التطبيقات',
+    icon: GitBranch,
+    color: 'from-gray-600 to-gray-800',
+    category: 'git',
+    connected: true,
+    popular: true,
   },
   {
     id: 'vercel',
     name: 'Vercel',
-    description: 'نشر المشاريع تلقائياً على Vercel',
-    icon: <Cloud className="h-6 w-6" />,
-    category: 'deployment',
-    isConnected: true,
-  },
-  {
-    id: 'cloudflare',
-    name: 'Cloudflare Pages',
-    description: 'نشر سريع على شبكة Cloudflare',
-    icon: <Cloud className="h-6 w-6" />,
-    category: 'deployment',
-    isConnected: false,
-    isPopular: true,
+    nameEn: 'Vercel',
+    description: 'نشر تطبيقات الويب على Vercel',
+    icon: Cloud,
+    color: 'from-black to-gray-800',
+    category: 'hosting',
+    connected: false,
+    popular: true,
   },
   {
     id: 'netlify',
     name: 'Netlify',
-    description: 'استضافة ونشر مواقع ويب حديثة',
-    icon: <Cloud className="h-6 w-6" />,
-    category: 'deployment',
-    isConnected: false,
+    nameEn: 'Netlify',
+    description: 'استضافة ونشر المواقع الثابتة',
+    icon: Cloud,
+    color: 'from-teal-500 to-teal-700',
+    category: 'hosting',
+    connected: false,
   },
   {
     id: 'supabase',
     name: 'Supabase',
-    description: 'قاعدة بيانات ومصادقة وتخزين',
-    icon: <Database className="h-6 w-6" />,
-    category: 'development',
-    isConnected: true,
-    isPopular: true,
+    nameEn: 'Supabase',
+    description: 'قاعدة بيانات PostgreSQL مع مصادقة',
+    icon: Database,
+    color: 'from-green-500 to-emerald-700',
+    category: 'database',
+    connected: true,
+    popular: true,
   },
   {
     id: 'firebase',
     name: 'Firebase',
+    nameEn: 'Firebase',
     description: 'خدمات Google السحابية للتطبيقات',
-    icon: <Database className="h-6 w-6" />,
-    category: 'development',
-    isConnected: false,
+    icon: Database,
+    color: 'from-orange-500 to-yellow-600',
+    category: 'database',
+    connected: false,
   },
   {
-    id: 'slack',
-    name: 'Slack',
-    description: 'إشعارات وتنبيهات للفريق',
-    icon: <MessageSquare className="h-6 w-6" />,
-    category: 'communication',
-    isConnected: false,
+    id: 'openai',
+    name: 'OpenAI',
+    nameEn: 'OpenAI',
+    description: 'دمج GPT-4 وDALL-E في تطبيقاتك',
+    icon: Zap,
+    color: 'from-teal-400 to-green-600',
+    category: 'ai',
+    connected: true,
+    popular: true,
   },
   {
-    id: 'discord',
-    name: 'Discord',
-    description: 'إشعارات على قنوات Discord',
-    icon: <MessageSquare className="h-6 w-6" />,
-    category: 'communication',
-    isConnected: false,
-    isNew: true,
+    id: 'anthropic',
+    name: 'Anthropic',
+    nameEn: 'Anthropic',
+    description: 'استخدام Claude للذكاء الاصطناعي',
+    icon: Zap,
+    color: 'from-orange-400 to-red-600',
+    category: 'ai',
+    connected: false,
   },
   {
-    id: 'google-analytics',
-    name: 'Google Analytics',
-    description: 'تحليلات متقدمة للزوار',
-    icon: <BarChart3 className="h-6 w-6" />,
-    category: 'analytics',
-    isConnected: false,
+    id: 'cloudflare',
+    name: 'Cloudflare',
+    nameEn: 'Cloudflare',
+    description: 'CDN وحماية وWorkers',
+    icon: Cloud,
+    color: 'from-orange-500 to-orange-700',
+    category: 'hosting',
+    connected: true,
   },
   {
     id: 'stripe',
     name: 'Stripe',
-    description: 'معالجة المدفوعات والاشتراكات',
-    icon: <CreditCard className="h-6 w-6" />,
-    category: 'payment',
-    isConnected: false,
+    nameEn: 'Stripe',
+    description: 'معالجة المدفوعات العالمية',
+    icon: Link2,
+    color: 'from-purple-500 to-indigo-700',
+    category: 'analytics',
+    connected: false,
+    popular: true,
   },
   {
-    id: 'auth0',
-    name: 'Auth0',
-    description: 'مصادقة وإدارة المستخدمين',
-    icon: <Shield className="h-6 w-6" />,
-    category: 'development',
-    isConnected: false,
-  },
-  {
-    id: 'resend',
-    name: 'Resend',
-    description: 'إرسال رسائل البريد الإلكتروني',
-    icon: <Mail className="h-6 w-6" />,
-    category: 'communication',
-    isConnected: false,
-    isNew: true,
+    id: 'myfatoorah',
+    name: 'ماي فاتورة',
+    nameEn: 'MyFatoorah',
+    description: 'بوابة دفع عربية للخليج',
+    icon: Link2,
+    color: 'from-blue-500 to-blue-700',
+    category: 'analytics',
+    connected: false,
+    popular: true,
   },
 ];
 
 const categories = [
-  { id: 'all', label: 'الكل' },
-  { id: 'development', label: 'التطوير' },
-  { id: 'deployment', label: 'النشر' },
-  { id: 'analytics', label: 'التحليلات' },
-  { id: 'communication', label: 'التواصل' },
-  { id: 'payment', label: 'المدفوعات' },
+  { id: 'all', name: 'الكل', icon: Puzzle },
+  { id: 'hosting', name: 'الاستضافة', icon: Cloud },
+  { id: 'database', name: 'قواعد البيانات', icon: Database },
+  { id: 'git', name: 'Git', icon: GitBranch },
+  { id: 'ai', name: 'الذكاء الاصطناعي', icon: Zap },
+  { id: 'analytics', name: 'الدفع والتحليلات', icon: Link2 },
 ];
 
 export default function IntegrationsPage() {
-  const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [connectionStates, setConnectionStates] = useState<Record<string, boolean>>({});
+  const { user, loading: authLoading, isAuthenticated } = useRequireAuth();
   const [activeCategory, setActiveCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [integrationsState, setIntegrationsState] = useState(integrations);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        // Load saved integration states from localStorage
-        const savedIntegrations = storage.getIntegrations();
-
-        if (savedIntegrations && typeof savedIntegrations === 'object') {
-          // Convert to simple boolean record
-          const booleanStates: Record<string, boolean> = {};
-          Object.keys(savedIntegrations).forEach((key) => {
-            const val = (savedIntegrations as any)[key];
-            booleanStates[key] = typeof val === 'boolean' ? val : !!val?.isConnected;
-          });
-          setConnectionStates(booleanStates);
-        }
-
-        const { user: currentUser } = await getUser();
-
-        /*
-         * تم تعطيل التحقق مؤقتاً
-         * if (!currentUser) {
-         *   navigate('/editor');
-         *   return;
-         * }
-         */
-        setUser(currentUser || { email: 'demo@example.com', user_metadata: { name: 'مستخدم تجريبي' } });
-      } catch (err) {
-        console.error('Integrations error:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadData();
-  }, [navigate]);
-
-  const toggleConnection = (integrationId: string) => {
-    setConnectionStates((prev) => {
-      const newState = { ...prev, [integrationId]: !prev[integrationId] };
-      storage.setIntegrations(newState as any);
-
-      return newState;
-    });
-  };
-
-  const getIntegrationsList = () => {
-    return integrations.map((i) => ({
-      ...i,
-      isConnected: connectionStates[i.id] ?? i.isConnected,
-    }));
-  };
-
-  const filteredIntegrations =
-    activeCategory === 'all'
-      ? getIntegrationsList()
-      : getIntegrationsList().filter((i) => i.category === activeCategory);
-
-  const connectedCount = getIntegrationsList().filter((i) => i.isConnected).length;
-
-  if (loading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
         <div className="text-center">
-          <motion.div
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4"
-          >
-            <Sparkles className="h-8 w-8 text-white" />
-          </motion.div>
+          <Loader2 className="w-10 h-10 animate-spin text-purple-600 mx-auto mb-4" />
+          <p className="text-gray-400">جاري التحميل...</p>
         </div>
       </div>
     );
   }
 
+  if (!isAuthenticated || !user) {
+    return null;
+  }
+
+  const filteredIntegrations = integrationsState.filter(integration => {
+    const matchesCategory = activeCategory === 'all' || integration.category === activeCategory;
+    const matchesSearch = integration.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          integration.nameEn.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          integration.description.includes(searchQuery);
+    return matchesCategory && matchesSearch;
+  });
+
+  const handleToggleConnection = (id: string) => {
+    setIntegrationsState(prev => 
+      prev.map(int => int.id === id ? { ...int, connected: !int.connected } : int)
+    );
+  };
+
+  const connectedCount = integrationsState.filter(i => i.connected).length;
+
   return (
     <DashboardLayout
       user={{
-        name: user?.user_metadata?.name || user?.email?.split('@')[0] || 'المستخدم',
-        email: user?.email || '',
-        avatar: user?.user_metadata?.avatar_url,
+        name: user.name || user.email?.split('@')[0] || 'المستخدم',
+        email: user.email || '',
+        avatar: user.avatar,
       }}
     >
       <div className="p-6 lg:p-8" dir="rtl">
-        <DashboardHeader title="التكاملات" subtitle={`${connectedCount} تكامل متصل`} />
+        <DashboardHeader title="التكاملات" subtitle="ربط خدماتك المفضلة" />
 
-        {/* Connected Summary */}
-        <div className="mb-8 p-4 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-2xl">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-500/20 rounded-xl">
-              <Zap className="h-5 w-5 text-purple-400" />
+        {/* Stats */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5"
+          >
+            <div className="p-2 rounded-lg w-fit mb-3 bg-purple-500/20">
+              <Puzzle className="h-5 w-5 text-purple-400" />
             </div>
-            <div>
-              <p className="text-white font-medium">التكاملات المتصلة</p>
-              <p className="text-gray-400 text-sm">
-                لديك {connectedCount} تكامل متصل من أصل {integrations.length}
-              </p>
+            <p className="text-gray-400 text-sm mb-1">إجمالي التكاملات</p>
+            <span className="text-2xl font-bold text-white">{integrationsState.length}</span>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5"
+          >
+            <div className="p-2 rounded-lg w-fit mb-3 bg-green-500/20">
+              <Check className="h-5 w-5 text-green-400" />
             </div>
-          </div>
+            <p className="text-gray-400 text-sm mb-1">متصلة</p>
+            <span className="text-2xl font-bold text-white">{connectedCount}</span>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5"
+          >
+            <div className="p-2 rounded-lg w-fit mb-3 bg-yellow-500/20">
+              <X className="h-5 w-5 text-yellow-400" />
+            </div>
+            <p className="text-gray-400 text-sm mb-1">غير متصلة</p>
+            <span className="text-2xl font-bold text-white">{integrationsState.length - connectedCount}</span>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5"
+          >
+            <div className="p-2 rounded-lg w-fit mb-3 bg-blue-500/20">
+              <Zap className="h-5 w-5 text-blue-400" />
+            </div>
+            <p className="text-gray-400 text-sm mb-1">الأكثر شعبية</p>
+            <span className="text-2xl font-bold text-white">{integrationsState.filter(i => i.popular).length}</span>
+          </motion.div>
         </div>
 
-        {/* Category Tabs */}
-        <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
+        {/* Categories */}
+        <div className="flex flex-wrap gap-2 mb-6">
           {categories.map((category) => (
             <button
               key={category.id}
               onClick={() => setActiveCategory(category.id)}
-              className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-colors ${
+              className={`px-4 py-2 rounded-xl flex items-center gap-2 transition-all ${
                 activeCategory === category.id
-                  ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
-                  : 'bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10 hover:text-white'
+                  ? 'bg-purple-600 text-white'
+                  : 'bg-white/5 text-gray-400 hover:bg-white/10'
               }`}
             >
-              {category.label}
+              <category.icon className="w-4 h-4" />
+              <span>{category.name}</span>
             </button>
           ))}
         </div>
 
+        {/* Search */}
+        <div className="relative mb-6">
+          <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <input
+            type="text"
+            placeholder="البحث عن تكامل..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pr-12 pl-4 text-white placeholder-gray-500"
+          />
+        </div>
+
         {/* Integrations Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredIntegrations.map((integration, index) => (
             <motion.div
               key={integration.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
-              className="group bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 hover:border-purple-500/30 transition-all"
+              className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5 hover:bg-white/10 transition-all group"
             >
               <div className="flex items-start justify-between mb-4">
-                <div
-                  className={`p-3 rounded-xl ${integration.isConnected ? 'bg-green-500/20 text-green-400' : 'bg-white/10 text-gray-400'}`}
-                >
-                  {integration.icon}
+                <div className={`p-3 rounded-xl bg-gradient-to-br ${integration.color}`}>
+                  <integration.icon className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex items-center gap-2">
-                  {integration.isNew && (
-                    <span className="px-2 py-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full text-xs text-white font-medium">
-                      جديد
+                  {integration.popular && (
+                    <span className="px-2 py-1 bg-yellow-500/20 text-yellow-400 text-xs rounded-full">
+                      شائع
                     </span>
                   )}
-                  {integration.isPopular && (
-                    <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 rounded-full text-xs font-medium">
-                      شائع
+                  {integration.connected && (
+                    <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded-full flex items-center gap-1">
+                      <Check className="w-3 h-3" />
+                      متصل
                     </span>
                   )}
                 </div>
@@ -309,26 +307,45 @@ export default function IntegrationsPage() {
               <h3 className="text-lg font-semibold text-white mb-2">{integration.name}</h3>
               <p className="text-gray-400 text-sm mb-4">{integration.description}</p>
 
-              {integration.isConnected ? (
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 text-green-400 text-sm">
-                    <Check className="h-4 w-4" />
-                    متصل
-                  </span>
-                  <button className="flex items-center gap-1.5 text-gray-400 hover:text-white text-sm transition-colors">
-                    <Settings className="h-4 w-4" />
-                    إعدادات
+              <div className="flex items-center gap-2">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleToggleConnection(integration.id)}
+                  className={`flex-1 py-2 rounded-xl font-medium transition-all ${
+                    integration.connected
+                      ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
+                      : 'bg-purple-600 text-white hover:bg-purple-700'
+                  }`}
+                >
+                  {integration.connected ? 'فصل' : 'ربط'}
+                </motion.button>
+                
+                {integration.connected && (
+                  <button className="p-2 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
+                    <Settings className="w-5 h-5 text-gray-400" />
                   </button>
-                </div>
-              ) : (
-                <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-purple-500/20 border border-white/10 hover:border-purple-500/30 rounded-xl text-white font-medium transition-all">
-                  <ExternalLink className="h-4 w-4" />
-                  ربط
+                )}
+                
+                <button className="p-2 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
+                  <ExternalLink className="w-5 h-5 text-gray-400" />
                 </button>
-              )}
+              </div>
             </motion.div>
           ))}
         </div>
+
+        {filteredIntegrations.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-12"
+          >
+            <Puzzle className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-white mb-2">لا توجد تكاملات</h3>
+            <p className="text-gray-400">لم يتم العثور على تكاملات تطابق بحثك</p>
+          </motion.div>
+        )}
       </div>
     </DashboardLayout>
   );

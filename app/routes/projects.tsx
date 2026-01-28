@@ -2,40 +2,29 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from '@remix-run/react';
 import type { MetaFunction } from '@remix-run/cloudflare';
-import { getUser, getProjects, deleteProject } from '~/lib/supabase/client';
+import { getProjects, deleteProject } from '~/lib/supabase/client';
 import type { Project } from '~/lib/supabase/client';
+import { useRequireAuth } from '~/lib/auth/useAuth';
 import { DashboardLayout } from '~/components/layout/dashboard-layout';
 import { DashboardHeader } from '~/components/layout/sidebar';
 import { ProjectCard, ProjectGrid, EmptyProjects } from '~/components/ui/project-card';
-import { Plus, Search, Filter, Grid3X3, List, Sparkles, SortAsc, SortDesc } from 'lucide-react';
+import { Plus, Search, Filter, Grid3X3, List, Sparkles, SortAsc, SortDesc, Loader2 } from 'lucide-react';
 
 export const meta: MetaFunction = () => {
   return [{ title: 'المشاريع - مبسط إديتر' }, { name: 'description', content: 'إدارة جميع مشاريعك' }];
 };
 
 const mapStatus = (status: string): 'active' | 'building' | 'archived' | 'draft' => {
-  if (status === 'published') {
-    return 'active';
-  }
-
-  if (status === 'draft') {
-    return 'draft';
-  }
-
-  if (status === 'archived') {
-    return 'archived';
-  }
-
-  if (status === 'building') {
-    return 'building';
-  }
-
+  if (status === 'published') return 'active';
+  if (status === 'draft') return 'draft';
+  if (status === 'archived') return 'archived';
+  if (status === 'building') return 'building';
   return 'draft';
 };
 
 export default function ProjectsPage() {
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
+  const { user, loading: authLoading, isAuthenticated } = useRequireAuth();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -44,72 +33,24 @@ export default function ProjectsPage() {
   const [filterStatus, setFilterStatus] = useState<'all' | 'published' | 'draft'>('all');
 
   useEffect(() => {
-    const loadData = async () => {
+    const loadProjects = async () => {
+      if (!isAuthenticated) return;
+      
       try {
-        const { user: currentUser } = await getUser();
-
-        /*
-         * تم تعطيل التحقق مؤقتاً
-         * if (!currentUser) {
-         *   navigate('/login');
-         *   return;
-         * }
-         */
-        setUser(currentUser || { email: 'demo@example.com', user_metadata: { name: 'مستخدم تجريبي' } });
-
         const { data } = await getProjects();
         setProjects(data || []);
       } catch (err) {
         console.error('Projects error:', err);
-
-        // Mock data
-        setProjects([
-          {
-            id: '1',
-            user_id: '',
-            name: 'متجر إلكتروني',
-            description: 'متجر لبيع المنتجات الإلكترونية مع سلة تسوق كاملة',
-            status: 'published',
-            preview_url: 'https://example.com/store',
-            created_at: '2025-01-20T10:00:00Z',
-            updated_at: '2025-01-25T15:30:00Z',
-          },
-          {
-            id: '2',
-            user_id: '',
-            name: 'موقع شركة تقنية',
-            description: 'موقع تعريفي لشركة تقنية ناشئة',
-            status: 'draft',
-            created_at: '2025-01-18T08:00:00Z',
-            updated_at: '2025-01-24T12:00:00Z',
-          },
-          {
-            id: '3',
-            user_id: '',
-            name: 'مدونة شخصية',
-            description: 'مدونة للتدوين والمقالات التقنية',
-            status: 'published',
-            preview_url: 'https://example.com/blog',
-            created_at: '2025-01-15T14:00:00Z',
-            updated_at: '2025-01-23T09:00:00Z',
-          },
-          {
-            id: '4',
-            user_id: '',
-            name: 'لوحة تحكم إدارية',
-            description: 'لوحة تحكم لإدارة الموظفين والمهام',
-            status: 'draft',
-            created_at: '2025-01-10T11:00:00Z',
-            updated_at: '2025-01-22T16:00:00Z',
-          },
-        ]);
+        setProjects([]);
       } finally {
         setLoading(false);
       }
     };
 
-    loadData();
-  }, [navigate]);
+    if (isAuthenticated) {
+      loadProjects();
+    }
+  }, [isAuthenticated]);
 
   // Filter and sort projects
   const filteredProjects = projects
@@ -118,13 +59,11 @@ export default function ProjectsPage() {
         p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.description?.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesStatus = filterStatus === 'all' || p.status === filterStatus;
-
       return matchesSearch && matchesStatus;
     })
     .sort((a, b) => {
       const dateA = new Date(a.updated_at).getTime();
       const dateB = new Date(b.updated_at).getTime();
-
       return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
     });
 
@@ -137,7 +76,8 @@ export default function ProjectsPage() {
     }
   };
 
-  if (loading) {
+  // شاشة التحميل
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
         <div className="text-center">
@@ -160,12 +100,16 @@ export default function ProjectsPage() {
     );
   }
 
+  if (!isAuthenticated || !user) {
+    return null;
+  }
+
   return (
     <DashboardLayout
       user={{
-        name: user?.user_metadata?.name || user?.email?.split('@')[0] || 'المستخدم',
-        email: user?.email || '',
-        avatar: user?.user_metadata?.avatar_url,
+        name: user.name || user.email?.split('@')[0] || 'المستخدم',
+        email: user.email || '',
+        avatar: user.avatar,
       }}
     >
       <div className="p-6 lg:p-8" dir="rtl">

@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from '@remix-run/react';
 import type { MetaFunction } from '@remix-run/cloudflare';
-import { getUser } from '~/lib/supabase/client';
+import { useRequireAuth } from '~/lib/auth/useAuth';
 import { DashboardLayout } from '~/components/layout/dashboard-layout';
 import { DashboardHeader } from '~/components/layout/sidebar';
-import { CreditCard, Check, Sparkles, Zap, Star, Crown, Download, ExternalLink, Calendar, Receipt } from 'lucide-react';
+import { CreditCard, Check, Sparkles, Zap, Star, Crown, Download, Calendar, Receipt, Loader2 } from 'lucide-react';
 
 export const meta: MetaFunction = () => {
   return [{ title: 'الفوترة - مبسط إديتر' }, { name: 'description', content: 'إدارة اشتراكك والفواتير' }];
@@ -24,7 +24,7 @@ const plans = [
   {
     id: 'pro',
     name: 'احترافي',
-    price: 29,
+    price: 99,
     description: 'للمحترفين والفرق الصغيرة',
     icon: Star,
     color: 'purple',
@@ -41,7 +41,7 @@ const plans = [
   {
     id: 'enterprise',
     name: 'مؤسسات',
-    price: 99,
+    price: 299,
     description: 'للشركات الكبيرة',
     icon: Crown,
     color: 'yellow',
@@ -49,63 +49,32 @@ const plans = [
   },
 ];
 
-const invoices = [
-  { id: 'INV-001', date: '2025-01-01', amount: 29, status: 'paid' },
-  { id: 'INV-002', date: '2024-12-01', amount: 29, status: 'paid' },
-  { id: 'INV-003', date: '2024-11-01', amount: 29, status: 'paid' },
-];
-
 export default function BillingPage() {
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, loading: authLoading, isAuthenticated } = useRequireAuth();
   const [currentPlan] = useState('free');
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const { user: currentUser } = await getUser();
-
-        /*
-         * تم تعطيل التحقق مؤقتاً
-         * if (!currentUser) {
-         *   navigate('/login');
-         *   return;
-         * }
-         */
-        setUser(currentUser || { email: 'demo@example.com', user_metadata: { name: 'مستخدم تجريبي' } });
-      } catch (err) {
-        console.error('Billing error:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadData();
-  }, [navigate]);
-
-  if (loading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
         <div className="text-center">
-          <motion.div
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4"
-          >
-            <Sparkles className="h-8 w-8 text-white" />
-          </motion.div>
+          <Loader2 className="w-10 h-10 animate-spin text-purple-600 mx-auto mb-4" />
+          <p className="text-gray-400">جاري التحميل...</p>
         </div>
       </div>
     );
   }
 
+  if (!isAuthenticated || !user) {
+    return null;
+  }
+
   return (
     <DashboardLayout
       user={{
-        name: user?.user_metadata?.name || user?.email?.split('@')[0] || 'المستخدم',
-        email: user?.email || '',
-        avatar: user?.user_metadata?.avatar_url,
+        name: user.name || user.email?.split('@')[0] || 'المستخدم',
+        email: user.email || '',
+        avatar: user.avatar,
       }}
     >
       <div className="p-6 lg:p-8" dir="rtl">
@@ -160,15 +129,10 @@ export default function BillingPage() {
                   </div>
                 )}
 
-                <div
-                  className={`p-3 rounded-xl w-fit mb-4 ${
-                    plan.color === 'purple'
-                      ? 'bg-purple-500/20 text-purple-400'
-                      : plan.color === 'yellow'
-                        ? 'bg-yellow-500/20 text-yellow-400'
-                        : 'bg-gray-500/20 text-gray-400'
-                  }`}
-                >
+                <div className={`p-3 rounded-xl w-fit mb-4 ${
+                  plan.color === 'purple' ? 'bg-purple-500/20 text-purple-400' :
+                  plan.color === 'yellow' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-gray-500/20 text-gray-400'
+                }`}>
                   <PlanIcon className="h-6 w-6" />
                 </div>
 
@@ -176,22 +140,17 @@ export default function BillingPage() {
                 <p className="text-gray-400 text-sm mb-4">{plan.description}</p>
 
                 <div className="mb-6">
-                  <span className="text-3xl font-bold text-white">${plan.price}</span>
+                  <span className="text-3xl font-bold text-white">{plan.price} ر.س</span>
                   <span className="text-gray-400">/شهرياً</span>
                 </div>
 
                 <ul className="space-y-3 mb-6">
                   {plan.features.map((feature, i) => (
                     <li key={i} className="flex items-center gap-2 text-sm text-gray-300">
-                      <Check
-                        className={`h-4 w-4 ${
-                          plan.color === 'purple'
-                            ? 'text-purple-400'
-                            : plan.color === 'yellow'
-                              ? 'text-yellow-400'
-                              : 'text-gray-400'
-                        }`}
-                      />
+                      <Check className={`h-4 w-4 ${
+                        plan.color === 'purple' ? 'text-purple-400' :
+                        plan.color === 'yellow' ? 'text-yellow-400' : 'text-gray-400'
+                      }`} />
                       {feature}
                     </li>
                   ))}
@@ -226,61 +185,12 @@ export default function BillingPage() {
             <button className="text-purple-400 hover:text-purple-300 text-sm transition-colors">إضافة بطاقة</button>
           </div>
 
-          <div className="flex items-center gap-4 p-4 bg-white/5 border border-white/10 rounded-xl">
-            <div className="p-2 bg-blue-500/20 rounded-lg">
-              <CreditCard className="h-5 w-5 text-blue-400" />
-            </div>
-            <div className="flex-1">
-              <p className="text-white font-medium">•••• •••• •••• 4242</p>
-              <p className="text-gray-400 text-sm">تنتهي 12/2026</p>
-            </div>
-            <button className="text-gray-400 hover:text-white text-sm transition-colors">تعديل</button>
-          </div>
-        </motion.div>
-
-        {/* Invoices */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6"
-        >
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-white">الفواتير</h3>
-            <button className="flex items-center gap-2 text-purple-400 hover:text-purple-300 text-sm transition-colors">
-              <Download className="h-4 w-4" />
-              تحميل الكل
+          <div className="text-center py-8 text-gray-400">
+            <CreditCard className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <p>لم تتم إضافة طريقة دفع بعد</p>
+            <button className="mt-4 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-xl text-white text-sm transition-colors">
+              إضافة بطاقة دفع
             </button>
-          </div>
-
-          <div className="space-y-4">
-            {invoices.map((invoice) => (
-              <div
-                key={invoice.id}
-                className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-xl"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="p-2 bg-gray-500/20 rounded-lg">
-                    <Receipt className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <div>
-                    <p className="text-white font-medium">{invoice.id}</p>
-                    <p className="text-gray-400 text-sm flex items-center gap-1">
-                      <Calendar className="h-3 w-3" />
-                      {new Date(invoice.date).toLocaleDateString('ar-SA')}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <span className="text-white font-medium">${invoice.amount}</span>
-                  <span className="px-2 py-0.5 bg-green-500/20 text-green-400 rounded-full text-xs">مدفوعة</span>
-                  <button className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
-                    <Download className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-            ))}
           </div>
         </motion.div>
       </div>

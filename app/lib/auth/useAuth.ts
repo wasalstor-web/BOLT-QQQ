@@ -138,5 +138,5 @@ export function useRequireAuth(requiredRole?: UserRole) {
     }
   }, [loading, isAuthenticated, user, requiredRole, navigate]);
 
-  return { user, loading, isAuthenticated };
+  return { user, loading, isAuthenticated, signOut: async () => { const supabase = (await import('~/lib/supabase/client')).getSupabase(); await supabase.auth.signOut(); navigate('/login'); } };
 }
