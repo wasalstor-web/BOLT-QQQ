@@ -73,16 +73,10 @@ export async function requireAuth(requiredRole?: UserRole): Promise<AuthGuardRes
 }
 
 // توجيه حسب الدور بعد تسجيل الدخول
+// الكل يذهب لنفس الرابط /dashboard والمحتوى يتغير حسب الدور
 export function getDashboardRoute(role: UserRole | null): string {
-  switch (role) {
-    case 'admin':
-      return '/dashboard/admin';
-    case 'developer':
-      return '/dashboard/admin';
-    case 'client':
-    default:
-      return '/dashboard/client';
-  }
+  // رابط موحد للجميع - المحتوى يتغير حسب الدور
+  return '/dashboard';
 }
 
 // التحقق من صلاحية الوصول

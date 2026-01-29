@@ -33,7 +33,6 @@ export function useAuth() {
       if (!session) {
         setUser(null);
         setLoading(false);
-
         return;
       }
 
@@ -44,7 +43,6 @@ export function useAuth() {
       if (!authUser) {
         setUser(null);
         setLoading(false);
-
         return;
       }
 
@@ -99,10 +97,9 @@ export function useAuth() {
     }
   };
 
-  // التوجيه للوحة التحكم المناسبة
+  // التوجيه للوحة التحكم
   const goToDashboard = () => {
-    const route = getDashboardRoute(user?.role || null);
-    navigate(route);
+    navigate('/dashboard');
   };
 
   return {
@@ -121,22 +118,30 @@ export function useAuth() {
 
 // Hook للتحقق من الصفحات المحمية
 export function useRequireAuth(requiredRole?: UserRole) {
-  const { user, loading, isAuthenticated } = useAuth();
+  const auth = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading) {
-      if (!isAuthenticated) {
+    if (!auth.loading) {
+      if (!auth.isAuthenticated) {
         navigate('/login');
         return;
       }
 
-      if (requiredRole && user?.role !== requiredRole) {
-        const route = getDashboardRoute(user?.role || null);
-        navigate(route);
+      // فقط توجيه إذا كان هناك دور محدد مطلوب
+      if (requiredRole && auth.user?.role !== requiredRole && auth.user?.role !== 'admin') {
+        navigate('/dashboard');
       }
     }
-  }, [loading, isAuthenticated, user, requiredRole, navigate]);
+  }, [auth.loading, auth.isAuthenticated, auth.user, requiredRole, navigate]);
 
-  return { user, loading, isAuthenticated, signOut: async () => { const supabase = (await import('~/lib/supabase/client')).getSupabase(); await supabase.auth.signOut(); navigate('/login'); } };
+  return {
+    user: auth.user,
+    loading: auth.loading,
+    isAuthenticated: auth.isAuthenticated,
+    isAdmin: auth.isAdmin,
+    isDeveloper: auth.isDeveloper,
+    isClient: auth.isClient,
+    signOut: auth.signOut,
+  };
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from '@remix-run/react';
+import { useNavigate, Link } from '@remix-run/react';
 import type { MetaFunction } from '@remix-run/cloudflare';
 import { getProjects } from '~/lib/supabase/client';
 import type { Project as SupabaseProject } from '~/lib/supabase/client';
@@ -10,7 +10,24 @@ import { StatsCard, StatsGrid } from '~/components/ui/stats-card';
 import { AreaChart } from '~/components/ui/area-chart';
 import { ActivityFeed, type ActivityType } from '~/components/ui/activity-feed';
 import { ProjectCard, ProjectGrid, EmptyProjects } from '~/components/ui/project-card';
-import { Folder, Eye, TrendingUp, Zap, Plus, Sparkles, Loader2 } from 'lucide-react';
+import {
+  Folder,
+  Eye,
+  TrendingUp,
+  Zap,
+  Plus,
+  Sparkles,
+  Loader2,
+  Users,
+  Settings,
+  Shield,
+  Code,
+  Server,
+  CreditCard,
+  BarChart3,
+  GitBranch,
+  Globe,
+} from 'lucide-react';
 
 export const meta: MetaFunction = () => {
   return [{ title: 'لوحة التحكم - مبسط إديتر' }, { name: 'description', content: 'إدارة مشاريعك ومواقعك' }];
@@ -55,9 +72,19 @@ const recentActivities = [
   },
 ];
 
+// قائمة أدوات المشرف والمطور
+const adminTools = [
+  { name: 'إدارة المستخدمين', icon: Users, href: '/admin/users', color: 'from-blue-500 to-cyan-500' },
+  { name: 'إدارة الوكيل AI', icon: Code, href: '/admin/agent', color: 'from-purple-500 to-pink-500' },
+  { name: 'طلبات النشر', icon: Server, href: '/admin', color: 'from-green-500 to-emerald-500' },
+  { name: 'الإحصائيات', icon: BarChart3, href: '/analytics', color: 'from-orange-500 to-amber-500' },
+  { name: 'إعدادات الفوترة', icon: CreditCard, href: '/billing', color: 'from-red-500 to-pink-500' },
+  { name: 'إعدادات النظام', icon: Settings, href: '/settings', color: 'from-gray-500 to-slate-500' },
+];
+
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const { user, loading: authLoading, isAuthenticated } = useRequireAuth();
+  const { user, loading: authLoading, isAuthenticated, isAdmin, isDeveloper, isClient } = useRequireAuth();
   const [projects, setProjects] = useState<SupabaseProject[]>([]);
   const [projectsLoading, setProjectsLoading] = useState(true);
 
@@ -91,10 +118,10 @@ export default function DashboardPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-gray-950">
         <div className="text-center">
           <Loader2 className="w-10 h-10 animate-spin text-purple-600 mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">جاري التحميل...</p>
+          <p className="text-gray-400">جاري التحميل...</p>
         </div>
       </div>
     );
@@ -105,13 +132,16 @@ export default function DashboardPage() {
   }
 
   const userName = user.name || user.email?.split('@')[0] || 'مستخدم';
+  const userRole = isAdmin ? 'مشرف' : isDeveloper ? 'مطور' : 'عميل';
+  const roleColor = isAdmin ? 'text-red-400' : isDeveloper ? 'text-blue-400' : 'text-green-400';
+  const roleBg = isAdmin ? 'bg-red-500/10' : isDeveloper ? 'bg-blue-500/10' : 'bg-green-500/10';
 
   // Transform projects to match ProjectCard interface
   const transformedProjects = projects.map((p) => ({
     id: p.id,
     name: p.name,
     description: p.description,
-    status: p.status === 'published' ? 'active' as const : 'draft' as const,
+    status: p.status === 'published' ? ('active' as const) : ('draft' as const),
     lastUpdated: p.updated_at,
     createdAt: p.created_at,
     views: Math.floor(Math.random() * 500),
@@ -119,52 +149,99 @@ export default function DashboardPage() {
 
   return (
     <DashboardLayout>
-      <div className="p-6 space-y-8">
+      <div className="p-6 space-y-8" dir="rtl">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-white">مرحباً، {userName} 👋</h1>
-            <p className="text-gray-400 mt-1">إليك نظرة عامة على مشاريعك ونشاطك</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-3">
+              مرحباً، {userName} 👋
+              <span className={`text-sm px-3 py-1 rounded-full ${roleBg} ${roleColor}`}>
+                {userRole}
+              </span>
+            </h1>
+            <p className="text-gray-400 mt-1">
+              {isAdmin || isDeveloper
+                ? 'إليك نظرة شاملة على النظام والمشاريع'
+                : 'إليك نظرة عامة على مشاريعك'}
+            </p>
           </div>
           <button
             onClick={() => navigate('/editor')}
-            className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2.5 rounded-xl transition-colors"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-purple-500/25"
           >
             <Plus className="w-4 h-4" />
             مشروع جديد
           </button>
         </div>
 
+        {/* 🔥 Admin/Developer Tools - يظهر فقط للمشرف والمطور */}
+        {(isAdmin || isDeveloper) && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-4"
+          >
+            <div className="flex items-center gap-2">
+              <Shield className="w-5 h-5 text-red-400" />
+              <h2 className="text-xl font-bold text-white">أدوات الإدارة والتطوير</h2>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {adminTools.map((tool, index) => (
+                <motion.div
+                  key={tool.name}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  <Link
+                    to={tool.href}
+                    className="group flex flex-col items-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all"
+                  >
+                    <div
+                      className={`w-12 h-12 rounded-xl bg-gradient-to-br ${tool.color} flex items-center justify-center group-hover:scale-110 transition-transform`}
+                    >
+                      <tool.icon className="w-6 h-6 text-white" />
+                    </div>
+                    <span className="text-sm text-gray-300 text-center">{tool.name}</span>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
         {/* Stats Grid */}
         <StatsGrid>
           <StatsCard
-            title="إجمالي المشاريع"
+            title={isAdmin ? 'إجمالي المشاريع (الكل)' : 'مشاريعي'}
             value={stats.total}
             icon={<Folder className="w-5 h-5" />}
             delay={0}
           />
           <StatsCard
-            title="المشاريع المنشورة"
+            title="المنشورة"
             value={stats.published}
-            icon={<Eye className="w-5 h-5" />}
+            icon={<Globe className="w-5 h-5" />}
             change={25}
             trend="up"
             delay={0.1}
           />
           <StatsCard
-            title="المشاهدات الكلية"
+            title="المشاهدات"
             value={stats.views}
-            icon={<TrendingUp className="w-5 h-5" />}
+            icon={<Eye className="w-5 h-5" />}
             change={stats.growth}
             trend="up"
             delay={0.2}
           />
-          <StatsCard
-            title="معدل النمو"
-            value={`${stats.growth}%`}
-            icon={<Zap className="w-5 h-5" />}
-            delay={0.3}
-          />
+          {(isAdmin || isDeveloper) && (
+            <StatsCard
+              title="معدل النمو"
+              value={`${stats.growth}%`}
+              icon={<TrendingUp className="w-5 h-5" />}
+              delay={0.3}
+            />
+          )}
         </StatsGrid>
 
         {/* Charts & Activity Row */}
@@ -172,8 +249,8 @@ export default function DashboardPage() {
           <div className="lg:col-span-2">
             <AreaChart
               data={chartData}
-              title="الزيارات الشهرية"
-              subtitle="إحصائيات زيارات مشاريعك خلال الأشهر الماضية"
+              title={isAdmin ? 'إحصائيات النظام' : 'زيارات مشاريعك'}
+              subtitle="إحصائيات خلال الأشهر الماضية"
               color="purple"
             />
           </div>
@@ -185,13 +262,13 @@ export default function DashboardPage() {
         {/* Projects Section */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-white">مشاريعك الأخيرة</h2>
-            <button
-              onClick={() => navigate('/projects')}
-              className="text-purple-400 hover:text-purple-300 text-sm font-medium"
-            >
+            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+              <GitBranch className="w-5 h-5 text-purple-400" />
+              {isAdmin ? 'جميع المشاريع' : 'مشاريعك'}
+            </h2>
+            <Link to="/projects" className="text-purple-400 hover:text-purple-300 text-sm font-medium">
               عرض الكل
-            </button>
+            </Link>
           </div>
 
           {projectsLoading ? (
@@ -200,7 +277,7 @@ export default function DashboardPage() {
             </div>
           ) : transformedProjects.length > 0 ? (
             <ProjectGrid>
-              {transformedProjects.slice(0, 3).map((project, index) => (
+              {transformedProjects.slice(0, 6).map((project, index) => (
                 <ProjectCard
                   key={project.id}
                   project={project}
@@ -219,27 +296,69 @@ export default function DashboardPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-8 text-white"
+          className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/30 rounded-2xl p-8"
         >
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="space-y-2 text-center md:text-right">
-              <h3 className="text-xl font-bold flex items-center justify-center md:justify-start gap-2">
-                <Sparkles className="w-5 h-5" />
-                هل تريد إنشاء موقع جديد؟
+              <h3 className="text-xl font-bold text-white flex items-center justify-center md:justify-start gap-2">
+                <Sparkles className="w-5 h-5 text-purple-400" />
+                {isAdmin ? 'ابدأ في إنشاء مشروع للعملاء' : 'هل تريد إنشاء موقع جديد؟'}
               </h3>
-              <p className="text-purple-100">
-                استخدم الذكاء الاصطناعي لإنشاء موقعك في دقائق معدودة
+              <p className="text-gray-400">
+                استخدم الذكاء الاصطناعي لإنشاء مواقع احترافية في دقائق
               </p>
             </div>
             <button
               onClick={() => navigate('/editor')}
-              className="bg-white text-purple-600 hover:bg-purple-50 px-6 py-3 rounded-xl font-medium transition-colors flex items-center gap-2"
+              className="bg-white text-purple-600 hover:bg-purple-50 px-6 py-3 rounded-xl font-medium transition-colors flex items-center gap-2 shadow-lg"
             >
-              <Sparkles className="w-4 h-4" />
+              <Zap className="w-4 h-4" />
               ابدأ مع AI
             </button>
           </div>
         </motion.div>
+
+        {/* Quick Links for Admin */}
+        {isAdmin && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="grid grid-cols-1 md:grid-cols-2 gap-4"
+          >
+            <Link
+              to="/admin"
+              className="group p-6 rounded-2xl bg-gradient-to-br from-red-500/10 to-orange-500/10 border border-red-500/20 hover:border-red-500/40 transition-all"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center">
+                  <Shield className="w-6 h-6 text-red-400" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-white group-hover:text-red-400 transition-colors">
+                    لوحة الإدارة الكاملة
+                  </h4>
+                  <p className="text-sm text-gray-400">إدارة المستخدمين، الطلبات، والإعدادات</p>
+                </div>
+              </div>
+            </Link>
+            <Link
+              to="/settings"
+              className="group p-6 rounded-2xl bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/20 hover:border-blue-500/40 transition-all"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                  <Settings className="w-6 h-6 text-blue-400" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-white group-hover:text-blue-400 transition-colors">
+                    الإعدادات العامة
+                  </h4>
+                  <p className="text-sm text-gray-400">تخصيص المنصة وإعدادات الحساب</p>
+                </div>
+              </div>
+            </Link>
+          </motion.div>
+        )}
       </div>
     </DashboardLayout>
   );
