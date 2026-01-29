@@ -412,11 +412,14 @@ export function NotificationBell() {
 }
 
 // Header Component for Dashboard pages
-export function DashboardHeader({ title, subtitle }: { title: string; subtitle?: string }) {
+export function DashboardHeader({ title, subtitle, action }: { title: string; subtitle?: string; action?: React.ReactNode }) {
   return (
-    <div className="mb-8">
-      <h1 className="text-2xl font-bold text-white md:text-3xl">{title}</h1>
-      {subtitle && <p className="mt-1 text-gray-400">{subtitle}</p>}
+    <div className="mb-8 flex items-center justify-between">
+      <div>
+        <h1 className="text-2xl font-bold text-white md:text-3xl">{title}</h1>
+        {subtitle && <p className="mt-1 text-gray-400">{subtitle}</p>}
+      </div>
+      {action && <div>{action}</div>}
     </div>
   );
 }

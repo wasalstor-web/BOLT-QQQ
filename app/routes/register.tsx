@@ -127,13 +127,40 @@ export default function RegisterPage() {
       return;
     }
 
-    const { error } = await signUp(email, password, name);
-
-    if (error) {
-      setAuthError(error.message);
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, name }),
+      });
+      
+      const data = await response.json() as { error?: string; session?: { access_token: string; refresh_token: string } };
+      
+      if (!response.ok) {
+        setAuthError(data.error || 'فشل إنشاء الحساب');
+        setIsLoading(false);
+        return;
+      }
+      
+      // If we got a session, store it and redirect
+      if (data.session) {
+        localStorage.setItem('supabase.auth.token', JSON.stringify({
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token,
+        }));
+        window.location.href = '/dashboard';
+        return;
+      }
+      
+      setSuccessMessage('تم إنشاء حسابك بنجاح! يمكنك تسجيل الدخول الآن.');
       setIsLoading(false);
-    } else {
-      setSuccessMessage('تم إنشاء حسابك بنجاح! يرجى التحقق من بريدك الإلكتروني لتأكيد الحساب.');
+      
+      // Redirect to login after 2 seconds
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 2000);
+    } catch (err) {
+      setAuthError('حدث خطأ في الاتصال');
       setIsLoading(false);
     }
   };

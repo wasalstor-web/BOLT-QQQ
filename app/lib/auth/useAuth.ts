@@ -1,8 +1,16 @@
 // Hook للمصادقة - يستخدم في مكونات React
+// P0 FIX: Demo Mode removed for production security
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from '@remix-run/react';
 import { getSupabase, getUserRole, type UserRole } from '~/lib/supabase/client';
 import { getDashboardRoute } from './guard';
+
+// قائمة المشرفين
+const ADMIN_EMAILS = [
+  'wasal.stor@gmail.com', // المشرف الرئيسي
+  'admin@mubasit.local',
+  'wasalstor-web@users.noreply.github.com', // حساب GitHub الرئيسي
+];
 
 export interface AuthUser {
   id: string;
@@ -46,12 +54,33 @@ export function useAuth() {
         return;
       }
 
-      const role = await getUserRole();
+      // التحقق من الدور
+      let role = await getUserRole();
+
+      // إذا لم يوجد دور، تحقق من قائمة المشرفين
+      const email = authUser.email?.toLowerCase() || '';
+      if (!role || role === 'client') {
+        if (ADMIN_EMAILS.some((adminEmail) => adminEmail.toLowerCase() === email)) {
+          role = 'admin';
+          // حاول حفظ الدور في قاعدة البيانات
+          try {
+            await supabase.from('user_roles').upsert(
+              {
+                user_id: authUser.id,
+                role: 'admin',
+              },
+              { onConflict: 'user_id' },
+            );
+          } catch (e) {
+            console.error('Failed to save admin role:', e);
+          }
+        }
+      }
 
       setUser({
         id: authUser.id,
         email: authUser.email || '',
-        name: authUser.user_metadata?.name || authUser.user_metadata?.full_name,
+        name: authUser.user_metadata?.name || authUser.user_metadata?.full_name || authUser.user_metadata?.user_name,
         avatar: authUser.user_metadata?.avatar_url,
         role: role || 'client',
       });
@@ -66,7 +95,6 @@ export function useAuth() {
   useEffect(() => {
     loadUser();
 
-    // الاستماع لتغييرات المصادقة
     if (typeof window !== 'undefined') {
       const supabase = getSupabase();
       const {
@@ -85,7 +113,6 @@ export function useAuth() {
     }
   }, [loadUser]);
 
-  // تسجيل الخروج
   const signOut = async () => {
     try {
       const supabase = getSupabase();
@@ -94,10 +121,11 @@ export function useAuth() {
       navigate('/login');
     } catch (err) {
       console.error('Sign out error:', err);
+      // Still navigate to login on error
+      navigate('/login');
     }
   };
 
-  // التوجيه للوحة التحكم
   const goToDashboard = () => {
     navigate('/dashboard');
   };
@@ -108,15 +136,15 @@ export function useAuth() {
     error,
     isAuthenticated: !!user,
     isAdmin: user?.role === 'admin',
-    isDeveloper: user?.role === 'developer',
+    isDeveloper: user?.role === 'developer' || user?.role === 'admin',
     isClient: user?.role === 'client',
+    isDemoMode: false, // P0 FIX: Demo mode disabled
     signOut,
     goToDashboard,
     reload: loadUser,
   };
 }
 
-// Hook للتحقق من الصفحات المحمية
 export function useRequireAuth(requiredRole?: UserRole) {
   const auth = useAuth();
   const navigate = useNavigate();
@@ -128,7 +156,6 @@ export function useRequireAuth(requiredRole?: UserRole) {
         return;
       }
 
-      // فقط توجيه إذا كان هناك دور محدد مطلوب
       if (requiredRole && auth.user?.role !== requiredRole && auth.user?.role !== 'admin') {
         navigate('/dashboard');
       }
@@ -142,6 +169,7 @@ export function useRequireAuth(requiredRole?: UserRole) {
     isAdmin: auth.isAdmin,
     isDeveloper: auth.isDeveloper,
     isClient: auth.isClient,
+    isDemoMode: false, // P0 FIX: Demo mode disabled
     signOut: auth.signOut,
   };
 }
