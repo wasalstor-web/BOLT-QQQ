@@ -1,5 +1,7 @@
-// Hook للمصادقة - يستخدم في مكونات React
-// P0 FIX: Demo Mode removed for production security
+/*
+ * Hook للمصادقة - يستخدم في مكونات React
+ * P0 FIX: Demo Mode removed for production security
+ */
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from '@remix-run/react';
 import { getSupabase, getUserRole, type UserRole } from '~/lib/supabase/client';
@@ -41,6 +43,7 @@ export function useAuth() {
       if (!session) {
         setUser(null);
         setLoading(false);
+
         return;
       }
 
@@ -51,6 +54,7 @@ export function useAuth() {
       if (!authUser) {
         setUser(null);
         setLoading(false);
+
         return;
       }
 
@@ -59,9 +63,11 @@ export function useAuth() {
 
       // إذا لم يوجد دور، تحقق من قائمة المشرفين
       const email = authUser.email?.toLowerCase() || '';
+
       if (!role || role === 'client') {
         if (ADMIN_EMAILS.some((adminEmail) => adminEmail.toLowerCase() === email)) {
           role = 'admin';
+
           // حاول حفظ الدور في قاعدة البيانات
           try {
             await supabase.from('user_roles').upsert(
@@ -121,6 +127,7 @@ export function useAuth() {
       navigate('/login');
     } catch (err) {
       console.error('Sign out error:', err);
+
       // Still navigate to login on error
       navigate('/login');
     }

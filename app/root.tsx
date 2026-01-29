@@ -113,6 +113,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 import { logStore } from './lib/stores/logs';
+import { initializeAuth } from './lib/auth/authProvider';
 
 export default function App() {
   const theme = useStore(themeStore);
@@ -123,6 +124,11 @@ export default function App() {
       platform: navigator.platform,
       userAgent: navigator.userAgent,
       timestamp: new Date().toISOString(),
+    });
+
+    // Initialize authentication
+    initializeAuth().catch((error) => {
+      logStore.logError('Failed to initialize authentication', error);
     });
 
     // Initialize debug logging with improved error handling

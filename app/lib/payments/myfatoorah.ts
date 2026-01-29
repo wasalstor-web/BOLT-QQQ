@@ -1,7 +1,7 @@
 /**
  * MyFatoorah Payment Integration
  * بوابة ماي فاتورة للدفع الإلكتروني
- * 
+ *
  * Documentation: https://myfatoorah.readme.io/
  */
 
@@ -148,7 +148,7 @@ export class MyFatoorahClient {
   private getHeaders(): HeadersInit {
     return {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${this.config.apiKey}`,
+      Authorization: `Bearer ${this.config.apiKey}`,
     };
   }
 
@@ -193,7 +193,7 @@ export class MyFatoorahClient {
         Language: request.language,
         CustomerReference: request.customerReference,
         UserDefinedField: request.userDefinedField,
-        InvoiceItems: request.invoiceItems?.map(item => ({
+        InvoiceItems: request.invoiceItems?.map((item) => ({
           ItemName: item.itemName,
           Quantity: item.quantity,
           UnitPrice: item.unitPrice,
@@ -228,7 +228,7 @@ export class MyFatoorahClient {
         Language: request.language,
         CustomerReference: request.customerReference,
         UserDefinedField: request.userDefinedField,
-        InvoiceItems: request.invoiceItems?.map(item => ({
+        InvoiceItems: request.invoiceItems?.map((item) => ({
           ItemName: item.itemName,
           Quantity: item.quantity,
           UnitPrice: item.unitPrice,
@@ -247,7 +247,10 @@ export class MyFatoorahClient {
    * Get payment status
    * الحصول على حالة الدفع
    */
-  async getPaymentStatus(paymentId: string, keyType: 'PaymentId' | 'InvoiceId' = 'PaymentId'): Promise<PaymentStatusResponse> {
+  async getPaymentStatus(
+    paymentId: string,
+    keyType: 'PaymentId' | 'InvoiceId' = 'PaymentId',
+  ): Promise<PaymentStatusResponse> {
     const response = await fetch(`${this.config.baseUrl}/v2/GetPaymentStatus`, {
       method: 'POST',
       headers: this.getHeaders(),
@@ -320,13 +323,7 @@ export const SUBSCRIPTION_PLANS = {
     price: 99,
     currency: 'SAR' as const,
     interval: 'month',
-    features: [
-      'مشاريع غير محدودة',
-      '100GB تخزين سحابي',
-      'دعم AI متقدم',
-      'نطاقات مخصصة',
-      'دعم فني على مدار الساعة',
-    ],
+    features: ['مشاريع غير محدودة', '100GB تخزين سحابي', 'دعم AI متقدم', 'نطاقات مخصصة', 'دعم فني على مدار الساعة'],
   },
   enterprise: {
     id: 'enterprise',
@@ -355,44 +352,47 @@ export async function createSubscriptionPayment(
   planId: 'pro' | 'enterprise',
   customer: CustomerInfo,
   callbackUrl: string,
-  errorUrl: string
+  errorUrl: string,
 ): Promise<ExecutePaymentResponse> {
   const plan = SUBSCRIPTION_PLANS[planId];
-  
+
   // First, get available payment methods
   const paymentMethods = await client.initiatePayment(plan.price, plan.currency);
-  
+
   if (!paymentMethods.IsSuccess) {
     throw new Error(`Failed to get payment methods: ${paymentMethods.Message}`);
   }
 
   // Use the first available payment method (or you can let user choose)
   const paymentMethodId = paymentMethods.Data.PaymentMethods[0]?.PaymentMethodId;
-  
+
   if (!paymentMethodId) {
     throw new Error('No payment methods available');
   }
 
   // Execute payment
-  return client.executePayment({
-    invoiceValue: plan.price,
-    currency: plan.currency,
-    customerName: customer.name,
-    customerEmail: customer.email,
-    customerMobile: customer.mobile,
-    callbackUrl,
-    errorUrl,
-    language: 'ar',
-    customerReference: `sub_${planId}_${Date.now()}`,
-    userDefinedField: JSON.stringify({ planId, customerId: customer.email }),
-    invoiceItems: [
-      {
-        itemName: plan.name,
-        quantity: 1,
-        unitPrice: plan.price,
-      },
-    ],
-  }, paymentMethodId);
+  return client.executePayment(
+    {
+      invoiceValue: plan.price,
+      currency: plan.currency,
+      customerName: customer.name,
+      customerEmail: customer.email,
+      customerMobile: customer.mobile,
+      callbackUrl,
+      errorUrl,
+      language: 'ar',
+      customerReference: `sub_${planId}_${Date.now()}`,
+      userDefinedField: JSON.stringify({ planId, customerId: customer.email }),
+      invoiceItems: [
+        {
+          itemName: plan.name,
+          quantity: 1,
+          unitPrice: plan.price,
+        },
+      ],
+    },
+    paymentMethodId,
+  );
 }
 
 /**
@@ -401,7 +401,7 @@ export async function createSubscriptionPayment(
  */
 export async function handlePaymentCallback(
   client: MyFatoorahClient,
-  paymentId: string
+  paymentId: string,
 ): Promise<{
   success: boolean;
   status: string;
@@ -411,7 +411,7 @@ export async function handlePaymentCallback(
   userDefinedField: any;
 }> {
   const status = await client.getPaymentStatus(paymentId);
-  
+
   return {
     success: status.Data.InvoiceStatus === 'Paid',
     status: status.Data.InvoiceStatus,

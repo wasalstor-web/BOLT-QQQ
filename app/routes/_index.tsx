@@ -390,7 +390,7 @@ function PricingCard({
           </ul>
 
           <Link
-            to="/editor"
+            to="/login"
             className={cn(
               'block w-full py-3 rounded-xl font-medium text-center transition-all',
               isPopular
@@ -552,11 +552,11 @@ export default function LandingPage() {
             </div>
 
             <div className="hidden md:flex items-center gap-4">
-              <Link to="/editor" className="px-5 py-2.5 text-gray-300 hover:text-white transition-colors font-medium">
+              <Link to="/login" className="px-5 py-2.5 text-gray-300 hover:text-white transition-colors font-medium">
                 تسجيل الدخول
               </Link>
               <Link
-                to="/editor"
+                to="/login"
                 className="group px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 rounded-xl font-medium shadow-lg shadow-purple-500/30 transition-all hover:shadow-purple-500/50 hover:scale-105 flex items-center gap-2"
               >
                 ابدأ مجاناً
@@ -592,11 +592,11 @@ export default function LandingPage() {
                   آراء العملاء
                 </a>
                 <div className="pt-4 border-t border-white/10 space-y-3">
-                  <Link to="/editor" className="block text-center py-2.5 text-gray-300">
+                  <Link to="/login" className="block text-center py-2.5 text-gray-300">
                     جرب الآن
                   </Link>
                   <Link
-                    to="/editor"
+                    to="/login"
                     className="block text-center py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl font-medium"
                   >
                     ابدأ مجاناً
@@ -657,7 +657,7 @@ export default function LandingPage() {
             className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
           >
             <Link
-              to="/editor"
+              to="/login"
               className="group px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 rounded-2xl font-bold text-lg shadow-2xl shadow-purple-500/30 transition-all hover:shadow-purple-500/50 hover:scale-105 flex items-center gap-3"
             >
               <Rocket className="h-5 w-5" />
@@ -928,7 +928,7 @@ export default function LandingPage() {
                   انضم لآلاف المستخدمين الذين يبنون مواقعهم بالذكاء الاصطناعي
                 </p>
                 <Link
-                  to="/editor"
+                  to="/login"
                   className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 rounded-2xl font-bold text-lg shadow-2xl shadow-purple-500/30 transition-all hover:shadow-purple-500/50 hover:scale-105"
                 >
                   <Rocket className="h-5 w-5" />

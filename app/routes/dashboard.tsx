@@ -84,13 +84,15 @@ const adminTools = [
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const { user, loading: authLoading, isAuthenticated, isAdmin, isDeveloper, isClient } = useRequireAuth();
+  const { user, loading: authLoading, isAuthenticated, isAdmin, isDeveloper, isClient, isDemoMode } = useRequireAuth();
   const [projects, setProjects] = useState<SupabaseProject[]>([]);
   const [projectsLoading, setProjectsLoading] = useState(true);
 
   useEffect(() => {
     const loadProjects = async () => {
-      if (!isAuthenticated) return;
+      if (!isAuthenticated) {
+        return;
+      }
 
       try {
         const { data } = await getProjects();
@@ -155,14 +157,10 @@ export default function DashboardPage() {
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-3">
               مرحباً، {userName} 👋
-              <span className={`text-sm px-3 py-1 rounded-full ${roleBg} ${roleColor}`}>
-                {userRole}
-              </span>
+              <span className={`text-sm px-3 py-1 rounded-full ${roleBg} ${roleColor}`}>{userRole}</span>
             </h1>
             <p className="text-gray-400 mt-1">
-              {isAdmin || isDeveloper
-                ? 'إليك نظرة شاملة على النظام والمشاريع'
-                : 'إليك نظرة عامة على مشاريعك'}
+              {isAdmin || isDeveloper ? 'إليك نظرة شاملة على النظام والمشاريع' : 'إليك نظرة عامة على مشاريعك'}
             </p>
           </div>
           <button
@@ -176,11 +174,7 @@ export default function DashboardPage() {
 
         {/* 🔥 Admin/Developer Tools - يظهر فقط للمشرف والمطور */}
         {(isAdmin || isDeveloper) && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="space-y-4"
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
             <div className="flex items-center gap-2">
               <Shield className="w-5 h-5 text-red-400" />
               <h2 className="text-xl font-bold text-white">أدوات الإدارة والتطوير</h2>
@@ -304,9 +298,7 @@ export default function DashboardPage() {
                 <Sparkles className="w-5 h-5 text-purple-400" />
                 {isAdmin ? 'ابدأ في إنشاء مشروع للعملاء' : 'هل تريد إنشاء موقع جديد؟'}
               </h3>
-              <p className="text-gray-400">
-                استخدم الذكاء الاصطناعي لإنشاء مواقع احترافية في دقائق
-              </p>
+              <p className="text-gray-400">استخدم الذكاء الاصطناعي لإنشاء مواقع احترافية في دقائق</p>
             </div>
             <button
               onClick={() => navigate('/editor')}
@@ -350,9 +342,7 @@ export default function DashboardPage() {
                   <Settings className="w-6 h-6 text-blue-400" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-white group-hover:text-blue-400 transition-colors">
-                    الإعدادات العامة
-                  </h4>
+                  <h4 className="font-bold text-white group-hover:text-blue-400 transition-colors">الإعدادات العامة</h4>
                   <p className="text-sm text-gray-400">تخصيص المنصة وإعدادات الحساب</p>
                 </div>
               </div>

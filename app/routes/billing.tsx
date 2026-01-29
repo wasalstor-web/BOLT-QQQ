@@ -129,10 +129,15 @@ export default function BillingPage() {
                   </div>
                 )}
 
-                <div className={`p-3 rounded-xl w-fit mb-4 ${
-                  plan.color === 'purple' ? 'bg-purple-500/20 text-purple-400' :
-                  plan.color === 'yellow' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-gray-500/20 text-gray-400'
-                }`}>
+                <div
+                  className={`p-3 rounded-xl w-fit mb-4 ${
+                    plan.color === 'purple'
+                      ? 'bg-purple-500/20 text-purple-400'
+                      : plan.color === 'yellow'
+                        ? 'bg-yellow-500/20 text-yellow-400'
+                        : 'bg-gray-500/20 text-gray-400'
+                  }`}
+                >
                   <PlanIcon className="h-6 w-6" />
                 </div>
 
@@ -147,10 +152,15 @@ export default function BillingPage() {
                 <ul className="space-y-3 mb-6">
                   {plan.features.map((feature, i) => (
                     <li key={i} className="flex items-center gap-2 text-sm text-gray-300">
-                      <Check className={`h-4 w-4 ${
-                        plan.color === 'purple' ? 'text-purple-400' :
-                        plan.color === 'yellow' ? 'text-yellow-400' : 'text-gray-400'
-                      }`} />
+                      <Check
+                        className={`h-4 w-4 ${
+                          plan.color === 'purple'
+                            ? 'text-purple-400'
+                            : plan.color === 'yellow'
+                              ? 'text-yellow-400'
+                              : 'text-gray-400'
+                        }`}
+                      />
                       {feature}
                     </li>
                   ))}

@@ -3,10 +3,26 @@ import { motion } from 'framer-motion';
 import type { MetaFunction } from '@remix-run/cloudflare';
 import { Link } from '@remix-run/react';
 import { useRequireAuth } from '~/lib/auth/useAuth';
-import { 
-  Users, Search, Filter, Plus, Edit, Trash2, Shield, 
-  Crown, Code, Eye, Mail, Calendar, MoreVertical,
-  ArrowLeft, Loader2, X, Check, Ban, UserPlus
+import {
+  Users,
+  Search,
+  Filter,
+  Plus,
+  Edit,
+  Trash2,
+  Shield,
+  Crown,
+  Code,
+  Eye,
+  Mail,
+  Calendar,
+  MoreVertical,
+  ArrowLeft,
+  Loader2,
+  X,
+  Check,
+  Ban,
+  UserPlus,
 } from 'lucide-react';
 
 export const meta: MetaFunction = () => {
@@ -45,13 +61,83 @@ const planConfig = {
 };
 
 const mockUsers: User[] = [
-  { id: '1', name: 'أحمد محمد', email: 'ahmed@example.com', role: 'admin', status: 'active', plan: 'enterprise', projects: 12, createdAt: '2024-01-15', lastLogin: '2024-06-10' },
-  { id: '2', name: 'سارة علي', email: 'sara@example.com', role: 'developer', status: 'active', plan: 'pro', projects: 8, createdAt: '2024-02-20', lastLogin: '2024-06-09' },
-  { id: '3', name: 'محمد خالد', email: 'mohammed@example.com', role: 'developer', status: 'active', plan: 'pro', projects: 5, createdAt: '2024-03-10', lastLogin: '2024-06-08' },
-  { id: '4', name: 'ليلى أحمد', email: 'layla@example.com', role: 'client', status: 'pending', plan: 'free', projects: 2, createdAt: '2024-04-05', lastLogin: '2024-06-05' },
-  { id: '5', name: 'عمر حسن', email: 'omar@example.com', role: 'client', status: 'suspended', plan: 'free', projects: 0, createdAt: '2024-01-30', lastLogin: '2024-05-01' },
-  { id: '6', name: 'فاطمة محمود', email: 'fatima@example.com', role: 'developer', status: 'active', plan: 'pro', projects: 15, createdAt: '2024-02-15', lastLogin: '2024-06-10' },
-  { id: '7', name: 'خالد سعيد', email: 'khaled@example.com', role: 'client', status: 'active', plan: 'enterprise', projects: 3, createdAt: '2024-05-01', lastLogin: '2024-06-09' },
+  {
+    id: '1',
+    name: 'أحمد محمد',
+    email: 'ahmed@example.com',
+    role: 'admin',
+    status: 'active',
+    plan: 'enterprise',
+    projects: 12,
+    createdAt: '2024-01-15',
+    lastLogin: '2024-06-10',
+  },
+  {
+    id: '2',
+    name: 'سارة علي',
+    email: 'sara@example.com',
+    role: 'developer',
+    status: 'active',
+    plan: 'pro',
+    projects: 8,
+    createdAt: '2024-02-20',
+    lastLogin: '2024-06-09',
+  },
+  {
+    id: '3',
+    name: 'محمد خالد',
+    email: 'mohammed@example.com',
+    role: 'developer',
+    status: 'active',
+    plan: 'pro',
+    projects: 5,
+    createdAt: '2024-03-10',
+    lastLogin: '2024-06-08',
+  },
+  {
+    id: '4',
+    name: 'ليلى أحمد',
+    email: 'layla@example.com',
+    role: 'client',
+    status: 'pending',
+    plan: 'free',
+    projects: 2,
+    createdAt: '2024-04-05',
+    lastLogin: '2024-06-05',
+  },
+  {
+    id: '5',
+    name: 'عمر حسن',
+    email: 'omar@example.com',
+    role: 'client',
+    status: 'suspended',
+    plan: 'free',
+    projects: 0,
+    createdAt: '2024-01-30',
+    lastLogin: '2024-05-01',
+  },
+  {
+    id: '6',
+    name: 'فاطمة محمود',
+    email: 'fatima@example.com',
+    role: 'developer',
+    status: 'active',
+    plan: 'pro',
+    projects: 15,
+    createdAt: '2024-02-15',
+    lastLogin: '2024-06-10',
+  },
+  {
+    id: '7',
+    name: 'خالد سعيد',
+    email: 'khaled@example.com',
+    role: 'client',
+    status: 'active',
+    plan: 'enterprise',
+    projects: 3,
+    createdAt: '2024-05-01',
+    lastLogin: '2024-06-09',
+  },
 ];
 
 export default function AdminUsersPage() {
@@ -94,24 +180,28 @@ export default function AdminUsersPage() {
     );
   }
 
-  const filteredUsers = users.filter(u => {
+  const filteredUsers = users.filter((u) => {
     const matchesSearch = u.name.includes(searchQuery) || u.email.includes(searchQuery);
     const matchesRole = roleFilter === 'all' || u.role === roleFilter;
     const matchesStatus = statusFilter === 'all' || u.status === statusFilter;
+
     return matchesSearch && matchesRole && matchesStatus;
   });
 
   const handleDeleteUser = (id: string) => {
-    setUsers(users.filter(u => u.id !== id));
+    setUsers(users.filter((u) => u.id !== id));
   };
 
   const handleToggleStatus = (id: string) => {
-    setUsers(users.map(u => {
-      if (u.id === id) {
-        return { ...u, status: u.status === 'active' ? 'suspended' : 'active' };
-      }
-      return u;
-    }));
+    setUsers(
+      users.map((u) => {
+        if (u.id === id) {
+          return { ...u, status: u.status === 'active' ? 'suspended' : 'active' };
+        }
+
+        return u;
+      }),
+    );
   };
 
   return (
@@ -149,36 +239,55 @@ export default function AdminUsersPage() {
       <main className="max-w-7xl mx-auto px-6 py-8">
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5"
+          >
             <div className="p-2 rounded-lg w-fit mb-3 bg-purple-500/20">
               <Users className="h-5 w-5 text-purple-400" />
             </div>
             <p className="text-gray-400 text-sm mb-1">إجمالي المستخدمين</p>
             <span className="text-2xl font-bold text-white">{users.length}</span>
           </motion.div>
-          
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5">
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5"
+          >
             <div className="p-2 rounded-lg w-fit mb-3 bg-green-500/20">
               <Check className="h-5 w-5 text-green-400" />
             </div>
             <p className="text-gray-400 text-sm mb-1">نشطون</p>
-            <span className="text-2xl font-bold text-white">{users.filter(u => u.status === 'active').length}</span>
+            <span className="text-2xl font-bold text-white">{users.filter((u) => u.status === 'active').length}</span>
           </motion.div>
-          
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5">
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5"
+          >
             <div className="p-2 rounded-lg w-fit mb-3 bg-blue-500/20">
               <Crown className="h-5 w-5 text-blue-400" />
             </div>
             <p className="text-gray-400 text-sm mb-1">Pro</p>
-            <span className="text-2xl font-bold text-white">{users.filter(u => u.plan === 'pro').length}</span>
+            <span className="text-2xl font-bold text-white">{users.filter((u) => u.plan === 'pro').length}</span>
           </motion.div>
-          
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5">
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5"
+          >
             <div className="p-2 rounded-lg w-fit mb-3 bg-purple-500/20">
               <Shield className="h-5 w-5 text-purple-400" />
             </div>
             <p className="text-gray-400 text-sm mb-1">مشرفون</p>
-            <span className="text-2xl font-bold text-white">{users.filter(u => u.role === 'admin').length}</span>
+            <span className="text-2xl font-bold text-white">{users.filter((u) => u.role === 'admin').length}</span>
           </motion.div>
         </div>
 
@@ -194,7 +303,7 @@ export default function AdminUsersPage() {
               className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pr-12 pl-4 text-white placeholder-gray-500"
             />
           </div>
-          
+
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
@@ -205,7 +314,7 @@ export default function AdminUsersPage() {
             <option value="developer">مطور</option>
             <option value="client">عميل</option>
           </select>
-          
+
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
@@ -254,7 +363,9 @@ export default function AdminUsersPage() {
                         </div>
                       </td>
                       <td className="py-4 px-6">
-                        <span className={`px-3 py-1 rounded-full text-sm flex items-center gap-1 w-fit ${roleConfig[u.role].color}`}>
+                        <span
+                          className={`px-3 py-1 rounded-full text-sm flex items-center gap-1 w-fit ${roleConfig[u.role].color}`}
+                        >
                           <RoleIcon className="w-3 h-3" />
                           {roleConfig[u.role].label}
                         </span>
@@ -270,26 +381,25 @@ export default function AdminUsersPage() {
                         </span>
                       </td>
                       <td className="py-4 px-6 text-gray-400">{u.projects}</td>
-                      <td className="py-4 px-6 text-gray-400">
-                        {new Date(u.lastLogin).toLocaleDateString('ar-SA')}
-                      </td>
+                      <td className="py-4 px-6 text-gray-400">{new Date(u.lastLogin).toLocaleDateString('ar-SA')}</td>
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-2">
                           <button className="p-2 hover:bg-white/10 rounded-lg transition-colors">
                             <Edit className="w-4 h-4 text-gray-400" />
                           </button>
-                          <button 
+                          <button
                             onClick={() => handleToggleStatus(u.id)}
                             className={`p-2 rounded-lg transition-colors ${
                               u.status === 'active' ? 'hover:bg-red-500/20' : 'hover:bg-green-500/20'
                             }`}
                           >
-                            {u.status === 'active' 
-                              ? <Ban className="w-4 h-4 text-red-400" />
-                              : <Check className="w-4 h-4 text-green-400" />
-                            }
+                            {u.status === 'active' ? (
+                              <Ban className="w-4 h-4 text-red-400" />
+                            ) : (
+                              <Check className="w-4 h-4 text-green-400" />
+                            )}
                           </button>
-                          <button 
+                          <button
                             onClick={() => handleDeleteUser(u.id)}
                             className="p-2 hover:bg-red-500/20 rounded-lg transition-colors"
                           >
@@ -306,11 +416,7 @@ export default function AdminUsersPage() {
         </motion.div>
 
         {filteredUsers.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-12"
-          >
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12">
             <Users className="w-16 h-16 text-gray-600 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-white mb-2">لا يوجد مستخدمون</h3>
             <p className="text-gray-400">لم يتم العثور على مستخدمين يطابقون بحثك</p>

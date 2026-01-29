@@ -33,7 +33,12 @@ function selectAgent(message: string): keyof typeof AGENTS {
   const lowerMsg = message.toLowerCase();
 
   // Arabic text or complex analysis -> Claude
-  if (/[\u0600-\u06FF]/.test(message) || lowerMsg.includes('حلل') || lowerMsg.includes('اكتب') || lowerMsg.includes('برمج')) {
+  if (
+    /[\u0600-\u06FF]/.test(message) ||
+    lowerMsg.includes('حلل') ||
+    lowerMsg.includes('اكتب') ||
+    lowerMsg.includes('برمج')
+  ) {
     return 'claude';
   }
 
@@ -69,15 +74,24 @@ function getModel(agentType: keyof typeof AGENTS, env: CloudflareEnv) {
 
   switch (agentType) {
     case 'claude':
-      if (!ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY not configured');
+      if (!ANTHROPIC_API_KEY) {
+        throw new Error('ANTHROPIC_API_KEY not configured');
+      }
+
       const anthropic = createAnthropic({ apiKey: ANTHROPIC_API_KEY });
       return anthropic(AGENTS.claude.model);
     case 'openai':
-      if (!OPENAI_API_KEY) throw new Error('OPENAI_API_KEY not configured');
+      if (!OPENAI_API_KEY) {
+        throw new Error('OPENAI_API_KEY not configured');
+      }
+
       const openai = createOpenAI({ apiKey: OPENAI_API_KEY });
       return openai(AGENTS.openai.model);
     case 'google':
-      if (!GOOGLE_API_KEY) throw new Error('GOOGLE_API_KEY not configured');
+      if (!GOOGLE_API_KEY) {
+        throw new Error('GOOGLE_API_KEY not configured');
+      }
+
       const google = createGoogleGenerativeAI({ apiKey: GOOGLE_API_KEY });
       return google(AGENTS.google.model);
   }
@@ -108,7 +122,7 @@ async function verifyAuth(request: Request, env: CloudflareEnv): Promise<{ user:
         return [key, val.join('=')];
       }),
     );
-    accessToken = cookies['sb-access-token'] || cookies['sb-ocrtidqksqojdkinqcxk-auth-token'];
+    accessToken = cookies['sb-access-token'] || cookies['sb-hostinger-auth-token'];
 
     // Try to parse JSON token if it's a Supabase auth token
     if (accessToken) {
@@ -263,9 +277,3 @@ export async function loader() {
     })),
   });
 }
-
-
-
-
-
-

@@ -40,8 +40,6 @@ export default function LoginPage() {
     }
   };
 
-
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
@@ -268,15 +266,9 @@ export default function LoginPage() {
                 <span>GitHub</span>
               </button>
             </div>
-          
           </div>
         </div>
       </motion.div>
     </div>
   );
 }
-
-
-
-
-

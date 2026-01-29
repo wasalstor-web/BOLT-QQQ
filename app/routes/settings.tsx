@@ -40,7 +40,7 @@ export default function SettingsPage() {
 
   const handleSave = async () => {
     setSaving(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     setSaving(false);
   };
 
@@ -53,8 +53,8 @@ export default function SettingsPage() {
       }}
     >
       <div className="p-6 lg:p-8" dir="rtl">
-        <DashboardHeader 
-          title="الإعدادات" 
+        <DashboardHeader
+          title="الإعدادات"
           subtitle="إدارة حسابك وتفضيلاتك"
           action={
             <button
@@ -177,14 +177,21 @@ export default function SettingsPage() {
                       <p className="text-gray-400 text-sm">{item.desc}</p>
                     </div>
                     <button
-                      onClick={() => setNotifications({ ...notifications, [item.id]: !notifications[item.id as keyof typeof notifications] })}
+                      onClick={() =>
+                        setNotifications({
+                          ...notifications,
+                          [item.id]: !notifications[item.id as keyof typeof notifications],
+                        })
+                      }
                       className={`w-12 h-6 rounded-full transition-colors ${
                         notifications[item.id as keyof typeof notifications] ? 'bg-purple-600' : 'bg-gray-600'
                       }`}
                     >
-                      <div className={`w-5 h-5 rounded-full bg-white transition-transform ${
-                        notifications[item.id as keyof typeof notifications] ? 'translate-x-6' : 'translate-x-0.5'
-                      }`} />
+                      <div
+                        className={`w-5 h-5 rounded-full bg-white transition-transform ${
+                          notifications[item.id as keyof typeof notifications] ? 'translate-x-6' : 'translate-x-0.5'
+                        }`}
+                      />
                     </button>
                   </div>
                 ))}

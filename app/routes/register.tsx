@@ -133,28 +133,36 @@ export default function RegisterPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, name }),
       });
-      
-      const data = await response.json() as { error?: string; session?: { access_token: string; refresh_token: string } };
-      
+
+      const data = (await response.json()) as {
+        error?: string;
+        session?: { access_token: string; refresh_token: string };
+      };
+
       if (!response.ok) {
         setAuthError(data.error || 'فشل إنشاء الحساب');
         setIsLoading(false);
+
         return;
       }
-      
+
       // If we got a session, store it and redirect
       if (data.session) {
-        localStorage.setItem('supabase.auth.token', JSON.stringify({
-          access_token: data.session.access_token,
-          refresh_token: data.session.refresh_token,
-        }));
+        localStorage.setItem(
+          'supabase.auth.token',
+          JSON.stringify({
+            access_token: data.session.access_token,
+            refresh_token: data.session.refresh_token,
+          }),
+        );
         window.location.href = '/dashboard';
+
         return;
       }
-      
+
       setSuccessMessage('تم إنشاء حسابك بنجاح! يمكنك تسجيل الدخول الآن.');
       setIsLoading(false);
-      
+
       // Redirect to login after 2 seconds
       setTimeout(() => {
         window.location.href = '/login';

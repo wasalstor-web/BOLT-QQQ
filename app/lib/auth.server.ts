@@ -7,9 +7,9 @@ import type { UserRole } from '~/lib/supabase/client';
  * Supabase Credentials
  * ═══════════════════════════════════════════════════════════════════
  */
-const SUPABASE_URL = 'https://ocrtidqksqojdkinqcxk.supabase.co';
+const SUPABASE_URL = 'https://italiano-substitute-folder-rehabilitation.trycloudflare.com';
 const SUPABASE_ANON_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jcnRpZHFrc3FvamRraW5xY3hrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1MDI1NDQsImV4cCI6MjA4NTA3ODU0NH0.tpThTu1AYx_fie7U3iTF5Vjv5o2XrdgxL8WwBM_60v4';
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyAgCiAgICAicm9sZSI6ICJhbm9uIiwKICAgICJpc3MiOiAic3VwYWJhc2UtZGVtbyIsCiAgICAiaWF0IjogMTY0MTc2OTIwMCwKICAgICJleHAiOiAxNzk5NTM1NjAwCn0.dc_X5iR_VP_qT0zsiyj_I_OZ2T9FtRU2BBNWN8Bu4GE';
 
 /*
  * ═══════════════════════════════════════════════════════════════════

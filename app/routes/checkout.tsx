@@ -3,9 +3,18 @@ import { motion } from 'framer-motion';
 import type { MetaFunction } from '@remix-run/cloudflare';
 import { Link, useSearchParams } from '@remix-run/react';
 import { useRequireAuth } from '~/lib/auth/useAuth';
-import { 
-  CreditCard, Check, Shield, Lock, ArrowRight, Loader2,
-  Sparkles, Zap, Building2, X, CheckCircle
+import {
+  CreditCard,
+  Check,
+  Shield,
+  Lock,
+  ArrowRight,
+  Loader2,
+  Sparkles,
+  Zap,
+  Building2,
+  X,
+  CheckCircle,
 } from 'lucide-react';
 
 export const meta: MetaFunction = () => {
@@ -68,7 +77,7 @@ export default function CheckoutPage() {
   const [searchParams] = useSearchParams();
   const planId = (searchParams.get('plan') as 'pro' | 'enterprise') || 'pro';
   const plan = plans[planId] || plans.pro;
-  
+
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('mada');
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -103,20 +112,22 @@ export default function CheckoutPage() {
 
   const handlePayment = async () => {
     setIsProcessing(true);
-    
+
     // Simulate payment processing
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // In production, this would call the MyFatoorah API
-    // const myfatoorah = createMyFatoorahClient();
-    // const payment = await createSubscriptionPayment(myfatoorah, planId, {...}, callbackUrl, errorUrl);
-    // window.location.href = payment.Data.PaymentURL;
-    
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    /*
+     * In production, this would call the MyFatoorah API
+     * const myfatoorah = createMyFatoorahClient();
+     * const payment = await createSubscriptionPayment(myfatoorah, planId, {...}, callbackUrl, errorUrl);
+     * window.location.href = payment.Data.PaymentURL;
+     */
+
     setIsProcessing(false);
     setIsSuccess(true);
   };
 
-  const finalPrice = plan.price - (plan.price * discount / 100);
+  const finalPrice = plan.price - (plan.price * discount) / 100;
 
   if (isSuccess) {
     return (
@@ -134,12 +145,10 @@ export default function CheckoutPage() {
           >
             <CheckCircle className="w-10 h-10 text-green-400" />
           </motion.div>
-          
+
           <h1 className="text-3xl font-bold text-white mb-4">تم الدفع بنجاح! 🎉</h1>
-          <p className="text-gray-400 mb-8">
-            تم تفعيل اشتراكك في {plan.name}. يمكنك الآن الاستمتاع بجميع المميزات.
-          </p>
-          
+          <p className="text-gray-400 mb-8">تم تفعيل اشتراكك في {plan.name}. يمكنك الآن الاستمتاع بجميع المميزات.</p>
+
           <div className="bg-white/5 rounded-2xl border border-white/10 p-6 mb-8">
             <div className="flex items-center justify-between mb-4">
               <span className="text-gray-400">الباقة</span>
@@ -147,14 +156,16 @@ export default function CheckoutPage() {
             </div>
             <div className="flex items-center justify-between mb-4">
               <span className="text-gray-400">المبلغ المدفوع</span>
-              <span className="text-white font-semibold">{finalPrice} {plan.currencySymbol}</span>
+              <span className="text-white font-semibold">
+                {finalPrice} {plan.currencySymbol}
+              </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-gray-400">رقم الفاتورة</span>
               <span className="text-white font-mono">INV-{Date.now()}</span>
             </div>
           </div>
-          
+
           <Link
             to="/dashboard"
             className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-semibold hover:opacity-90 transition-opacity"
@@ -179,7 +190,7 @@ export default function CheckoutPage() {
               </div>
               <span className="text-xl font-bold text-white">مبسط إديتر</span>
             </Link>
-            
+
             <div className="flex items-center gap-2 text-gray-400">
               <Lock className="w-4 h-4" />
               <span className="text-sm">دفع آمن ومشفر</span>
@@ -210,16 +221,15 @@ export default function CheckoutPage() {
                         <p className="text-gray-400 text-sm">{plan.nameEn}</p>
                       </div>
                     </div>
-                    <Link 
-                      to="/billing"
-                      className="text-purple-400 text-sm hover:text-purple-300"
-                    >
+                    <Link to="/billing" className="text-purple-400 text-sm hover:text-purple-300">
                       تغيير
                     </Link>
                   </div>
                   <div className="flex items-baseline gap-1">
                     <span className="text-3xl font-bold text-white">{plan.price}</span>
-                    <span className="text-gray-400">{plan.currencySymbol}/{plan.interval}</span>
+                    <span className="text-gray-400">
+                      {plan.currencySymbol}/{plan.interval}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -270,9 +280,7 @@ export default function CheckoutPage() {
                         <CreditCard className="w-8 h-8 text-gray-400" />
                       </div>
                       <span className="text-white text-sm">{method.name}</span>
-                      {method.popular && (
-                        <span className="block text-xs text-purple-400 mt-1">الأكثر استخداماً</span>
-                      )}
+                      {method.popular && <span className="block text-xs text-purple-400 mt-1">الأكثر استخداماً</span>}
                     </div>
                   </button>
                 ))}
@@ -310,21 +318,27 @@ export default function CheckoutPage() {
               <div className="border-t border-white/10 pt-6 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400">السعر الأساسي</span>
-                  <span className="text-white">{plan.price} {plan.currencySymbol}</span>
+                  <span className="text-white">
+                    {plan.price} {plan.currencySymbol}
+                  </span>
                 </div>
-                
+
                 {discount > 0 && (
                   <div className="flex items-center justify-between text-green-400">
                     <span>الخصم ({discount}%)</span>
-                    <span>-{(plan.price * discount / 100).toFixed(2)} {plan.currencySymbol}</span>
+                    <span>
+                      -{((plan.price * discount) / 100).toFixed(2)} {plan.currencySymbol}
+                    </span>
                   </div>
                 )}
-                
+
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400">الضريبة (15%)</span>
-                  <span className="text-white">{(finalPrice * 0.15).toFixed(2)} {plan.currencySymbol}</span>
+                  <span className="text-white">
+                    {(finalPrice * 0.15).toFixed(2)} {plan.currencySymbol}
+                  </span>
                 </div>
-                
+
                 <div className="border-t border-white/10 pt-3">
                   <div className="flex items-center justify-between">
                     <span className="text-white font-semibold">الإجمالي</span>

@@ -4,9 +4,19 @@ import type { MetaFunction } from '@remix-run/cloudflare';
 import { useRequireAuth } from '~/lib/auth/useAuth';
 import { DashboardLayout } from '~/components/layout/dashboard-layout';
 import { DashboardHeader } from '~/components/layout/sidebar';
-import { 
-  Puzzle, GitBranch, Cloud, Database, Zap, Link2, 
-  Check, X, ExternalLink, Settings, Loader2, Search 
+import {
+  Puzzle,
+  GitBranch,
+  Cloud,
+  Database,
+  Zap,
+  Link2,
+  Check,
+  X,
+  ExternalLink,
+  Settings,
+  Loader2,
+  Search,
 } from 'lucide-react';
 
 export const meta: MetaFunction = () => {
@@ -164,21 +174,21 @@ export default function IntegrationsPage() {
     return null;
   }
 
-  const filteredIntegrations = integrationsState.filter(integration => {
+  const filteredIntegrations = integrationsState.filter((integration) => {
     const matchesCategory = activeCategory === 'all' || integration.category === activeCategory;
-    const matchesSearch = integration.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          integration.nameEn.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          integration.description.includes(searchQuery);
+    const matchesSearch =
+      integration.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      integration.nameEn.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      integration.description.includes(searchQuery);
+
     return matchesCategory && matchesSearch;
   });
 
   const handleToggleConnection = (id: string) => {
-    setIntegrationsState(prev => 
-      prev.map(int => int.id === id ? { ...int, connected: !int.connected } : int)
-    );
+    setIntegrationsState((prev) => prev.map((int) => (int.id === id ? { ...int, connected: !int.connected } : int)));
   };
 
-  const connectedCount = integrationsState.filter(i => i.connected).length;
+  const connectedCount = integrationsState.filter((i) => i.connected).length;
 
   return (
     <DashboardLayout
@@ -241,7 +251,7 @@ export default function IntegrationsPage() {
               <Zap className="h-5 w-5 text-blue-400" />
             </div>
             <p className="text-gray-400 text-sm mb-1">الأكثر شعبية</p>
-            <span className="text-2xl font-bold text-white">{integrationsState.filter(i => i.popular).length}</span>
+            <span className="text-2xl font-bold text-white">{integrationsState.filter((i) => i.popular).length}</span>
           </motion.div>
         </div>
 
@@ -291,9 +301,7 @@ export default function IntegrationsPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   {integration.popular && (
-                    <span className="px-2 py-1 bg-yellow-500/20 text-yellow-400 text-xs rounded-full">
-                      شائع
-                    </span>
+                    <span className="px-2 py-1 bg-yellow-500/20 text-yellow-400 text-xs rounded-full">شائع</span>
                   )}
                   {integration.connected && (
                     <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded-full flex items-center gap-1">
@@ -320,13 +328,13 @@ export default function IntegrationsPage() {
                 >
                   {integration.connected ? 'فصل' : 'ربط'}
                 </motion.button>
-                
+
                 {integration.connected && (
                   <button className="p-2 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
                     <Settings className="w-5 h-5 text-gray-400" />
                   </button>
                 )}
-                
+
                 <button className="p-2 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
                   <ExternalLink className="w-5 h-5 text-gray-400" />
                 </button>
@@ -336,11 +344,7 @@ export default function IntegrationsPage() {
         </div>
 
         {filteredIntegrations.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-12"
-          >
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12">
             <Puzzle className="w-16 h-16 text-gray-600 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-white mb-2">لا توجد تكاملات</h3>
             <p className="text-gray-400">لم يتم العثور على تكاملات تطابق بحثك</p>

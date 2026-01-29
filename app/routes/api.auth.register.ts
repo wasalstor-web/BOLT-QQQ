@@ -26,11 +26,15 @@ export async function action({ request, context }: ActionFunctionArgs) {
     return json({ error: 'Method not allowed' }, { status: 405 });
   }
 
-  // P0 FIX: Get secrets from environment, NOT hardcoded
-  const env = (context.cloudflare?.env || {}) as CloudflareEnv;
-  const SUPABASE_URL = env.SUPABASE_URL || env.VITE_SUPABASE_URL;
-  const SUPABASE_ANON_KEY = env.SUPABASE_ANON_KEY || env.VITE_SUPABASE_ANON_KEY;
-  const SUPABASE_SERVICE_ROLE = env.SUPABASE_SERVICE_ROLE;
+  const cfEnv = (context.cloudflare?.env || {}) as CloudflareEnv;
+
+  const getEnv = (key: string): string | undefined => {
+    return cfEnv[key as keyof CloudflareEnv] || (typeof process !== 'undefined' ? process.env[key] : undefined);
+  };
+
+  const SUPABASE_URL = getEnv('SUPABASE_URL') || getEnv('VITE_SUPABASE_URL');
+  const SUPABASE_ANON_KEY = getEnv('SUPABASE_ANON_KEY') || getEnv('VITE_SUPABASE_ANON_KEY');
+  const SUPABASE_SERVICE_ROLE = getEnv('SUPABASE_SERVICE_ROLE');
 
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
     return json({ error: 'Service not configured' }, { status: 503 });
@@ -41,6 +45,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
   }
 
   let body: { email?: string; password?: string; name?: string };
+
   try {
     const text = await request.text();
     body = JSON.parse(text);
@@ -49,8 +54,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
   }
 
   const { email, password, name } = body;
+
   if (!email || !password) {
-    return json({ error: 'البريد وكلمة المرور مطلوبان' }, { status: 400 });
+    return json({ error: 'Email and password required' }, { status: 400 });
   }
 
   try {
@@ -73,14 +79,14 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
     if (!createRes.ok) {
       if (createData.error_code === 'email_exists') {
-        return json({ error: 'هذا البريد مسجل مسبقاً' }, { status: 400 });
+        return json({ error: 'Email already registered' }, { status: 400 });
       }
-      return json({ error: createData.msg || 'فشل إنشاء الحساب' }, { status: 400 });
+
+      return json({ error: createData.msg || 'Failed to create account' }, { status: 400 });
     }
 
     const userId = createData.id;
 
-    // Add role
     await fetch(SUPABASE_URL + '/rest/v1/user_roles', {
       method: 'POST',
       headers: {
@@ -92,7 +98,6 @@ export async function action({ request, context }: ActionFunctionArgs) {
       body: JSON.stringify({ user_id: userId, role: 'client' }),
     }).catch(() => {});
 
-    // Login
     const loginRes = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
       method: 'POST',
       headers: { apikey: SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
@@ -100,13 +105,14 @@ export async function action({ request, context }: ActionFunctionArgs) {
     });
 
     if (!loginRes.ok) {
-      return json({ success: true, message: 'تم إنشاء الحساب بنجاح!', user: { id: userId, email } });
+      return json({ success: true, message: 'Account created!', user: { id: userId, email } });
     }
 
     const loginData = (await loginRes.json()) as LoginResponse;
+
     return json({
       success: true,
-      message: 'تم إنشاء الحساب وتسجيل الدخول!',
+      message: 'Account created and logged in!',
       user: loginData.user,
       session: {
         access_token: loginData.access_token,
@@ -115,6 +121,6 @@ export async function action({ request, context }: ActionFunctionArgs) {
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Unknown';
-    return json({ error: 'خطأ: ' + message }, { status: 500 });
+    return json({ error: 'Error: ' + message }, { status: 500 });
   }
 }

@@ -4,6 +4,13 @@ import { getSupabase, getUserRole } from '~/lib/supabase/client';
 import { getDashboardRoute } from '~/lib/auth';
 import { motion } from 'framer-motion';
 
+// قائمة المشرفين
+const ADMIN_EMAILS = [
+  'wasal.stor@gmail.com', // المشرف الرئيسي
+  'admin@mubasit.local',
+  'wasalstor-web@users.noreply.github.com', // حساب GitHub الرئيسي
+];
+
 export default function AuthCallback() {
   const navigate = useNavigate();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
@@ -44,9 +51,39 @@ export default function AuthCallback() {
           setStatus('success');
           setMessage('تم تسجيل الدخول بنجاح!');
 
-          const role = await getUserRole();
-          const dashboardRoute = getDashboardRoute(role);
+          // الحصول على بيانات المستخدم
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
+          const email = user?.email?.toLowerCase() || '';
 
+          // التحقق من الدور
+          let role = await getUserRole();
+
+          // إذا لم يوجد دور، تحقق من قائمة المشرفين
+          if (!role || role === 'client') {
+            if (ADMIN_EMAILS.some((adminEmail) => adminEmail.toLowerCase() === email)) {
+              role = 'admin';
+
+              // إضافة الدور في قاعدة البيانات
+              if (user) {
+                try {
+                  await supabase.from('user_roles').upsert(
+                    {
+                      user_id: user.id,
+                      role: 'admin',
+                    },
+                    { onConflict: 'user_id' },
+                  );
+                  console.log('✅ Admin role assigned');
+                } catch (e) {
+                  console.error('Failed to assign admin role:', e);
+                }
+              }
+            }
+          }
+
+          const dashboardRoute = getDashboardRoute(role);
           setTimeout(() => navigate(dashboardRoute), 1500);
         } else {
           setStatus('error');

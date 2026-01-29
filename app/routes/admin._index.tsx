@@ -3,10 +3,26 @@ import { motion } from 'framer-motion';
 import type { MetaFunction } from '@remix-run/cloudflare';
 import { Link, useNavigate } from '@remix-run/react';
 import { useRequireAuth } from '~/lib/auth/useAuth';
-import { 
-  Users, FolderGit2, CreditCard, BarChart3, Settings, Shield, 
-  Bot, TrendingUp, TrendingDown, AlertCircle, Clock, CheckCircle2,
-  ArrowLeft, Activity, Database, Globe, Loader2, LogOut, Bell
+import {
+  Users,
+  FolderGit2,
+  CreditCard,
+  BarChart3,
+  Settings,
+  Shield,
+  Bot,
+  TrendingUp,
+  TrendingDown,
+  AlertCircle,
+  Clock,
+  CheckCircle2,
+  ArrowLeft,
+  Activity,
+  Database,
+  Globe,
+  Loader2,
+  LogOut,
+  Bell,
 } from 'lucide-react';
 
 export const meta: MetaFunction = () => {
@@ -81,7 +97,7 @@ export default function AdminDashboard() {
 
   // Check if user is admin
   const isAdmin = user.role === 'admin';
-  
+
   if (!isAdmin) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center" dir="rtl">
@@ -89,7 +105,7 @@ export default function AdminDashboard() {
           <Shield className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-white mb-2">غير مصرح</h1>
           <p className="text-gray-400 mb-6">ليس لديك صلاحية الوصول لهذه الصفحة</p>
-          <Link 
+          <Link
             to="/dashboard"
             className="px-6 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors"
           >
@@ -121,8 +137,8 @@ export default function AdminDashboard() {
                 <Bell className="w-5 h-5 text-gray-400" />
                 <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
               </button>
-              
-              <Link 
+
+              <Link
                 to="/dashboard"
                 className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-xl hover:bg-white/10 transition-colors text-gray-400"
               >
@@ -163,20 +179,32 @@ export default function AdminDashboard() {
               className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5"
             >
               <div className="flex items-center justify-between mb-4">
-                <div className={`p-2 rounded-lg ${
-                  stat.color === 'purple' ? 'bg-purple-500/20' :
-                  stat.color === 'blue' ? 'bg-blue-500/20' :
-                  stat.color === 'green' ? 'bg-green-500/20' : 'bg-orange-500/20'
-                }`}>
-                  <stat.icon className={`h-5 w-5 ${
-                    stat.color === 'purple' ? 'text-purple-400' :
-                    stat.color === 'blue' ? 'text-blue-400' :
-                    stat.color === 'green' ? 'text-green-400' : 'text-orange-400'
-                  }`} />
+                <div
+                  className={`p-2 rounded-lg ${
+                    stat.color === 'purple'
+                      ? 'bg-purple-500/20'
+                      : stat.color === 'blue'
+                        ? 'bg-blue-500/20'
+                        : stat.color === 'green'
+                          ? 'bg-green-500/20'
+                          : 'bg-orange-500/20'
+                  }`}
+                >
+                  <stat.icon
+                    className={`h-5 w-5 ${
+                      stat.color === 'purple'
+                        ? 'text-purple-400'
+                        : stat.color === 'blue'
+                          ? 'text-blue-400'
+                          : stat.color === 'green'
+                            ? 'text-green-400'
+                            : 'text-orange-400'
+                    }`}
+                  />
                 </div>
-                <span className={`text-sm flex items-center gap-1 ${
-                  stat.change >= 0 ? 'text-green-400' : 'text-red-400'
-                }`}>
+                <span
+                  className={`text-sm flex items-center gap-1 ${stat.change >= 0 ? 'text-green-400' : 'text-red-400'}`}
+                >
                   {stat.change >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
                   {Math.abs(stat.change)}%
                 </span>
@@ -225,14 +253,22 @@ export default function AdminDashboard() {
                 <div 
                   key={activity.id}
                   className="flex items-center gap-4 p-3 bg-white/5 rounded-xl"
-                >
-                  <div className={`p-2 rounded-lg ${
-                    activity.status === 'success' ? 'bg-green-500/20' :
-                    activity.status === 'warning' ? 'bg-yellow-500/20' : 'bg-red-500/20'
-                  }`}>
-                    {activity.status === 'success' ? <CheckCircle2 className="w-4 h-4 text-green-400" /> :
-                     activity.status === 'warning' ? <AlertCircle className="w-4 h-4 text-yellow-400" /> :
-                     <AlertCircle className="w-4 h-4 text-red-400" />}
+                  <div
+                    className={`p-2 rounded-lg ${
+                      activity.status === 'success'
+                        ? 'bg-green-500/20'
+                        : activity.status === 'warning'
+                          ? 'bg-yellow-500/20'
+                          : 'bg-red-500/20'
+                    }`}
+                  >
+                    {activity.status === 'success' ? (
+                      <CheckCircle2 className="w-4 h-4 text-green-400" />
+                    ) : activity.status === 'warning' ? (
+                      <AlertCircle className="w-4 h-4 text-yellow-400" />
+                    ) : (
+                      <AlertCircle className="w-4 h-4 text-red-400" />
+                    )}
                   </div>
                   <div className="flex-1">
                     <p className="text-white text-sm">{activity.message}</p>
@@ -260,17 +296,19 @@ export default function AdminDashboard() {
               <div key={service.name} className="p-4 bg-white/5 rounded-xl">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-white font-medium">{service.name}</span>
-                  <span className={`px-2 py-1 rounded-full text-xs ${
-                    service.status === 'operational' 
-                      ? 'bg-green-500/20 text-green-400' 
-                      : 'bg-yellow-500/20 text-yellow-400'
-                  }`}>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs ${
+                      service.status === 'operational'
+                        ? 'bg-green-500/20 text-green-400'
+                        : 'bg-yellow-500/20 text-yellow-400'
+                    }`}
+                  >
                     {service.status === 'operational' ? 'يعمل' : 'متأخر'}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
-                    <div 
+                    <div
                       className={`h-full rounded-full ${
                         service.status === 'operational' ? 'bg-green-500' : 'bg-yellow-500'
                       }`}

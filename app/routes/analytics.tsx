@@ -3,7 +3,19 @@ import type { MetaFunction } from '@remix-run/cloudflare';
 import { useRequireAuth } from '~/lib/auth/useAuth';
 import { DashboardLayout } from '~/components/layout/dashboard-layout';
 import { DashboardHeader } from '~/components/layout/sidebar';
-import { BarChart3, TrendingUp, Users, Eye, MousePointer, Clock, Globe, Monitor, Smartphone, Tablet, Loader2 } from 'lucide-react';
+import {
+  BarChart3,
+  TrendingUp,
+  Users,
+  Eye,
+  MousePointer,
+  Clock,
+  Globe,
+  Monitor,
+  Smartphone,
+  Tablet,
+  Loader2,
+} from 'lucide-react';
 
 export const meta: MetaFunction = () => {
   return [{ title: 'التحليلات - مبسط إديتر' }, { name: 'description', content: 'تحليلات مشاريعك' }];
@@ -85,16 +97,28 @@ export default function AnalyticsPage() {
               transition={{ delay: index * 0.1 }}
               className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5"
             >
-              <div className={`p-2 rounded-lg w-fit mb-3 ${
-                stat.color === 'purple' ? 'bg-purple-500/20' :
-                stat.color === 'blue' ? 'bg-blue-500/20' :
-                stat.color === 'green' ? 'bg-green-500/20' : 'bg-orange-500/20'
-              }`}>
-                <stat.icon className={`h-5 w-5 ${
-                  stat.color === 'purple' ? 'text-purple-400' :
-                  stat.color === 'blue' ? 'text-blue-400' :
-                  stat.color === 'green' ? 'text-green-400' : 'text-orange-400'
-                }`} />
+              <div
+                className={`p-2 rounded-lg w-fit mb-3 ${
+                  stat.color === 'purple'
+                    ? 'bg-purple-500/20'
+                    : stat.color === 'blue'
+                      ? 'bg-blue-500/20'
+                      : stat.color === 'green'
+                        ? 'bg-green-500/20'
+                        : 'bg-orange-500/20'
+                }`}
+              >
+                <stat.icon
+                  className={`h-5 w-5 ${
+                    stat.color === 'purple'
+                      ? 'text-purple-400'
+                      : stat.color === 'blue'
+                        ? 'text-blue-400'
+                        : stat.color === 'green'
+                          ? 'text-green-400'
+                          : 'text-orange-400'
+                  }`}
+                />
               </div>
               <p className="text-gray-400 text-sm mb-1">{stat.label}</p>
               <div className="flex items-baseline gap-2">
@@ -144,14 +168,24 @@ export default function AnalyticsPage() {
             <div className="space-y-4">
               {devices.map((device) => (
                 <div key={device.name} className="flex items-center gap-4">
-                  <div className={`p-2 rounded-lg ${
-                    device.color === 'purple' ? 'bg-purple-500/20' :
-                    device.color === 'blue' ? 'bg-blue-500/20' : 'bg-green-500/20'
-                  }`}>
-                    <device.icon className={`h-5 w-5 ${
-                      device.color === 'purple' ? 'text-purple-400' :
-                      device.color === 'blue' ? 'text-blue-400' : 'text-green-400'
-                    }`} />
+                  <div
+                    className={`p-2 rounded-lg ${
+                      device.color === 'purple'
+                        ? 'bg-purple-500/20'
+                        : device.color === 'blue'
+                          ? 'bg-blue-500/20'
+                          : 'bg-green-500/20'
+                    }`}
+                  >
+                    <device.icon
+                      className={`h-5 w-5 ${
+                        device.color === 'purple'
+                          ? 'text-purple-400'
+                          : device.color === 'blue'
+                            ? 'text-blue-400'
+                            : 'text-green-400'
+                      }`}
+                    />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-1">
@@ -164,8 +198,11 @@ export default function AnalyticsPage() {
                         animate={{ width: `${device.value}%` }}
                         transition={{ duration: 0.5 }}
                         className={`h-full rounded-full ${
-                          device.color === 'purple' ? 'bg-purple-500' :
-                          device.color === 'blue' ? 'bg-blue-500' : 'bg-green-500'
+                          device.color === 'purple'
+                            ? 'bg-purple-500'
+                            : device.color === 'blue'
+                              ? 'bg-blue-500'
+                              : 'bg-green-500'
                         }`}
                       />
                     </div>

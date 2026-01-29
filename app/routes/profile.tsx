@@ -5,7 +5,20 @@ import type { MetaFunction } from '@remix-run/cloudflare';
 import { useRequireAuth } from '~/lib/auth/useAuth';
 import { DashboardLayout } from '~/components/layout/dashboard-layout';
 import { DashboardHeader } from '~/components/layout/sidebar';
-import { User, Mail, Camera, Globe, MapPin, FileText, Shield, Bell, Palette, LogOut, Loader2, Save } from 'lucide-react';
+import {
+  User,
+  Mail,
+  Camera,
+  Globe,
+  MapPin,
+  FileText,
+  Shield,
+  Bell,
+  Palette,
+  LogOut,
+  Loader2,
+  Save,
+} from 'lucide-react';
 
 export const meta: MetaFunction = () => {
   return [{ title: 'الملف الشخصي - مبسط إديتر' }, { name: 'description', content: 'إدارة ملفك الشخصي' }];
@@ -39,8 +52,9 @@ export default function ProfilePage() {
 
   const handleSave = async () => {
     setSaving(true);
+
     // TODO: Save to Supabase
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     setSaving(false);
   };
 

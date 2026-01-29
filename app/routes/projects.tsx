@@ -15,10 +15,22 @@ export const meta: MetaFunction = () => {
 };
 
 const mapStatus = (status: string): 'active' | 'building' | 'archived' | 'draft' => {
-  if (status === 'published') return 'active';
-  if (status === 'draft') return 'draft';
-  if (status === 'archived') return 'archived';
-  if (status === 'building') return 'building';
+  if (status === 'published') {
+    return 'active';
+  }
+
+  if (status === 'draft') {
+    return 'draft';
+  }
+
+  if (status === 'archived') {
+    return 'archived';
+  }
+
+  if (status === 'building') {
+    return 'building';
+  }
+
   return 'draft';
 };
 
@@ -34,8 +46,10 @@ export default function ProjectsPage() {
 
   useEffect(() => {
     const loadProjects = async () => {
-      if (!isAuthenticated) return;
-      
+      if (!isAuthenticated) {
+        return;
+      }
+
       try {
         const { data } = await getProjects();
         setProjects(data || []);
@@ -59,11 +73,13 @@ export default function ProjectsPage() {
         p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.description?.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesStatus = filterStatus === 'all' || p.status === filterStatus;
+
       return matchesSearch && matchesStatus;
     })
     .sort((a, b) => {
       const dateA = new Date(a.updated_at).getTime();
       const dateB = new Date(b.updated_at).getTime();
+
       return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
     });
 

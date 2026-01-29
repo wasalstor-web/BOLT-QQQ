@@ -4,9 +4,20 @@ import type { MetaFunction } from '@remix-run/cloudflare';
 import { useRequireAuth } from '~/lib/auth/useAuth';
 import { DashboardLayout } from '~/components/layout/dashboard-layout';
 import { DashboardHeader } from '~/components/layout/sidebar';
-import { 
-  Users, Plus, Mail, MoreVertical, Shield, Edit, Trash2, 
-  UserCheck, UserX, Crown, Loader2, Search, X 
+import {
+  Users,
+  Plus,
+  Mail,
+  MoreVertical,
+  Shield,
+  Edit,
+  Trash2,
+  UserCheck,
+  UserX,
+  Crown,
+  Loader2,
+  Search,
+  X,
 } from 'lucide-react';
 
 export const meta: MetaFunction = () => {
@@ -37,45 +48,45 @@ const statusLabels: Record<string, { label: string; color: string }> = {
 };
 
 const mockTeamMembers: TeamMember[] = [
-  { 
-    id: '1', 
-    name: 'أحمد محمد', 
-    email: 'ahmed@example.com', 
-    role: 'owner', 
+  {
+    id: '1',
+    name: 'أحمد محمد',
+    email: 'ahmed@example.com',
+    role: 'owner',
     status: 'active',
-    joinedAt: '2024-01-15'
+    joinedAt: '2024-01-15',
   },
-  { 
-    id: '2', 
-    name: 'سارة علي', 
-    email: 'sara@example.com', 
-    role: 'admin', 
+  {
+    id: '2',
+    name: 'سارة علي',
+    email: 'sara@example.com',
+    role: 'admin',
     status: 'active',
-    joinedAt: '2024-02-20'
+    joinedAt: '2024-02-20',
   },
-  { 
-    id: '3', 
-    name: 'محمد خالد', 
-    email: 'mohammed@example.com', 
-    role: 'developer', 
+  {
+    id: '3',
+    name: 'محمد خالد',
+    email: 'mohammed@example.com',
+    role: 'developer',
     status: 'active',
-    joinedAt: '2024-03-10'
+    joinedAt: '2024-03-10',
   },
-  { 
-    id: '4', 
-    name: 'ليلى أحمد', 
-    email: 'layla@example.com', 
-    role: 'developer', 
+  {
+    id: '4',
+    name: 'ليلى أحمد',
+    email: 'layla@example.com',
+    role: 'developer',
     status: 'pending',
-    joinedAt: '2024-04-05'
+    joinedAt: '2024-04-05',
   },
-  { 
-    id: '5', 
-    name: 'عمر حسن', 
-    email: 'omar@example.com', 
-    role: 'viewer', 
+  {
+    id: '5',
+    name: 'عمر حسن',
+    email: 'omar@example.com',
+    role: 'viewer',
     status: 'inactive',
-    joinedAt: '2024-01-30'
+    joinedAt: '2024-01-30',
   },
 ];
 
@@ -102,13 +113,15 @@ export default function TeamPage() {
     return null;
   }
 
-  const filteredMembers = members.filter(member => 
-    member.name.includes(searchQuery) || member.email.includes(searchQuery)
+  const filteredMembers = members.filter(
+    (member) => member.name.includes(searchQuery) || member.email.includes(searchQuery),
   );
 
   const handleInvite = () => {
-    if (!inviteEmail) return;
-    
+    if (!inviteEmail) {
+      return;
+    }
+
     const newMember: TeamMember = {
       id: Date.now().toString(),
       name: inviteEmail.split('@')[0],
@@ -117,14 +130,14 @@ export default function TeamPage() {
       status: 'pending',
       joinedAt: new Date().toISOString().split('T')[0],
     };
-    
+
     setMembers([...members, newMember]);
     setInviteEmail('');
     setShowInviteModal(false);
   };
 
   const handleRemoveMember = (id: string) => {
-    setMembers(members.filter(m => m.id !== id));
+    setMembers(members.filter((m) => m.id !== id));
   };
 
   return (
@@ -153,9 +166,24 @@ export default function TeamPage() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[
             { label: 'إجمالي الأعضاء', value: members.length, icon: Users, color: 'purple' },
-            { label: 'نشطون', value: members.filter(m => m.status === 'active').length, icon: UserCheck, color: 'green' },
-            { label: 'معلقون', value: members.filter(m => m.status === 'pending').length, icon: UserX, color: 'yellow' },
-            { label: 'المديرون', value: members.filter(m => m.role === 'admin' || m.role === 'owner').length, icon: Crown, color: 'blue' },
+            {
+              label: 'نشطون',
+              value: members.filter((m) => m.status === 'active').length,
+              icon: UserCheck,
+              color: 'green',
+            },
+            {
+              label: 'معلقون',
+              value: members.filter((m) => m.status === 'pending').length,
+              icon: UserX,
+              color: 'yellow',
+            },
+            {
+              label: 'المديرون',
+              value: members.filter((m) => m.role === 'admin' || m.role === 'owner').length,
+              icon: Crown,
+              color: 'blue',
+            },
           ].map((stat, index) => (
             <motion.div
               key={stat.label}
@@ -164,16 +192,28 @@ export default function TeamPage() {
               transition={{ delay: index * 0.1 }}
               className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5"
             >
-              <div className={`p-2 rounded-lg w-fit mb-3 ${
-                stat.color === 'purple' ? 'bg-purple-500/20' :
-                stat.color === 'green' ? 'bg-green-500/20' :
-                stat.color === 'yellow' ? 'bg-yellow-500/20' : 'bg-blue-500/20'
-              }`}>
-                <stat.icon className={`h-5 w-5 ${
-                  stat.color === 'purple' ? 'text-purple-400' :
-                  stat.color === 'green' ? 'text-green-400' :
-                  stat.color === 'yellow' ? 'text-yellow-400' : 'text-blue-400'
-                }`} />
+              <div
+                className={`p-2 rounded-lg w-fit mb-3 ${
+                  stat.color === 'purple'
+                    ? 'bg-purple-500/20'
+                    : stat.color === 'green'
+                      ? 'bg-green-500/20'
+                      : stat.color === 'yellow'
+                        ? 'bg-yellow-500/20'
+                        : 'bg-blue-500/20'
+                }`}
+              >
+                <stat.icon
+                  className={`h-5 w-5 ${
+                    stat.color === 'purple'
+                      ? 'text-purple-400'
+                      : stat.color === 'green'
+                        ? 'text-green-400'
+                        : stat.color === 'yellow'
+                          ? 'text-yellow-400'
+                          : 'text-blue-400'
+                  }`}
+                />
               </div>
               <p className="text-gray-400 text-sm mb-1">{stat.label}</p>
               <span className="text-2xl font-bold text-white">{stat.value}</span>
@@ -234,9 +274,7 @@ export default function TeamPage() {
                         {statusLabels[member.status].label}
                       </span>
                     </td>
-                    <td className="py-4 px-6 text-gray-400">
-                      {new Date(member.joinedAt).toLocaleDateString('ar-SA')}
-                    </td>
+                    <td className="py-4 px-6 text-gray-400">{new Date(member.joinedAt).toLocaleDateString('ar-SA')}</td>
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-2">
                         {member.role !== 'owner' && (
@@ -244,7 +282,7 @@ export default function TeamPage() {
                             <button className="p-2 hover:bg-white/10 rounded-lg transition-colors">
                               <Edit className="w-4 h-4 text-gray-400" />
                             </button>
-                            <button 
+                            <button
                               onClick={() => handleRemoveMember(member.id)}
                               className="p-2 hover:bg-red-500/20 rounded-lg transition-colors"
                             >
@@ -271,14 +309,11 @@ export default function TeamPage() {
             >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold text-white">دعوة عضو جديد</h3>
-                <button 
-                  onClick={() => setShowInviteModal(false)}
-                  className="p-2 hover:bg-white/10 rounded-lg"
-                >
+                <button onClick={() => setShowInviteModal(false)} className="p-2 hover:bg-white/10 rounded-lg">
                   <X className="w-5 h-5 text-gray-400" />
                 </button>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
                   <label className="block text-gray-400 text-sm mb-2">البريد الإلكتروني</label>

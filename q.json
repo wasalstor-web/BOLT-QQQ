@@ -1,0 +1,1 @@
+{"query": "SELECT email FROM auth.users LIMIT 10"}
